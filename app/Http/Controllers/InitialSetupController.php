@@ -96,6 +96,7 @@ class InitialSetupController extends Controller
                 'rg' => $validated['owner_rg'],
                 'rg_issuer' => $validated['owner_rg_issuer'],
                 'role' => 'Presidente',
+                'gender' => $validated['owner_gender'],
                 'marital_status' => $validated['owner_marital_status'],
                 'profession' => $validated['owner_profession'],
                 'email' => $user->email,

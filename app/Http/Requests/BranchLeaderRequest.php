@@ -5,32 +5,32 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class MemberRequest extends FormRequest
+class BranchLeaderRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null;
     }
 
     public function rules(): array
     {
-        $member = $this->route('member');
-        $invite = $this->route('invite');
-        $institutionId = $member?->institution_id
-            ?? $invite?->institution_id
-            ?? $this->user()?->institution?->id;
+        $process = $this->route('process');
+        $location = $process?->location;
+        $leader = $location?->leader;
+        $locationId = $location?->id;
+        $leaderId = $leader?->id;
 
-        $emailRule = Rule::unique('members', 'email');
-        $cpfRule = Rule::unique('members', 'cpf');
+        $emailRule = Rule::unique('leaders', 'email');
+        $cpfRule = Rule::unique('leaders', 'cpf');
 
-        if ($institutionId) {
-            $emailRule = $emailRule->where(fn ($query) => $query->where('institution_id', $institutionId));
-            $cpfRule = $cpfRule->where(fn ($query) => $query->where('institution_id', $institutionId));
+        if ($locationId) {
+            $emailRule = $emailRule->where(fn ($query) => $query->where('location_id', $locationId));
+            $cpfRule = $cpfRule->where(fn ($query) => $query->where('location_id', $locationId));
         }
 
-        if ($member) {
-            $emailRule = $emailRule->ignore($member->id);
-            $cpfRule = $cpfRule->ignore($member->id);
+        if ($leaderId) {
+            $emailRule = $emailRule->ignore($leaderId);
+            $cpfRule = $cpfRule->ignore($leaderId);
         }
 
         return [
@@ -49,18 +49,6 @@ class MemberRequest extends FormRequest
             ],
             'rg' => ['required', 'string', 'max:50'],
             'rg_issuer' => ['required', 'string', 'max:50'],
-            'role' => [
-                'required',
-                Rule::in([
-                    'Presidente',
-                    'Vice Presidente',
-                    'Tesoureiro',
-                    'Segundo Tesoureiro',
-                    'Secretario',
-                    'Segundo Secretario',
-                    'Conselho Fiscal',
-                ]),
-            ],
             'gender' => ['required', 'string', Rule::in(config('people.genders'))],
             'marital_status' => ['required', 'string', Rule::in(config('people.marital_statuses'))],
             'profession' => ['required', 'string', 'max:120'],
@@ -76,4 +64,20 @@ class MemberRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'cpf.regex' => 'Informe o CPF no formato 000.000.000-00.',
+            'uf.regex' => 'Informe a UF com duas letras maiusculas.',
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('uf')) {
+            $this->merge([
+                'uf' => strtoupper((string) $this->input('uf')),
+            ]);
+        }
+    }
 }

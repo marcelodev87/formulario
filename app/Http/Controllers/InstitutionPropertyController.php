@@ -15,9 +15,12 @@ class InstitutionPropertyController extends Controller
 
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
+        $location = $institution->ensureHeadquartersLocation()->load('property');
+
         return view('institution.property.edit', [
             'institution' => $institution,
-            'property' => $institution->property,
+            'location' => $location,
+            'property' => $location->property,
         ]);
     }
 
@@ -29,7 +32,9 @@ class InstitutionPropertyController extends Controller
 
         $data = $request->validated();
 
-        $institution->property()->updateOrCreate([], $data);
+        $location = $institution->ensureHeadquartersLocation();
+
+        $location->property()->updateOrCreate([], $data);
 
         return redirect()->route('institution.property.edit')->with('status', 'Dados do imovel atualizados com sucesso.');
     }

@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Models\Institution;
 use App\Models\Invite;
 use App\Models\Member;
+use App\Models\Process;
 use App\Policies\InstitutionPolicy;
 use App\Policies\MemberPolicy;
+use App\Policies\ProcessPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Institution::class, InstitutionPolicy::class);
         Gate::policy(Member::class, MemberPolicy::class);
+        Gate::policy(Process::class, ProcessPolicy::class);
 
         RateLimiter::for('magic-link', function ($request) {
             return Limit::perMinute(5)->by($request->ip());
@@ -32,6 +35,18 @@ class AppServiceProvider extends ServiceProvider
 
         Route::bind('invite', function (string $value) {
             return Invite::where('key', $value)->firstOrFail();
+        });
+
+        Route::bind('process', function (string $value) {
+            $user = request()->user();
+
+            $query = Process::query()->whereKey($value);
+
+            if ($user && $user->institution) {
+                $query->where('institution_id', $user->institution->id);
+            }
+
+            return $query->firstOrFail();
         });
 
         Validator::extend('cpf', function ($attribute, $value) {
@@ -56,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return true;
-        }, 'O campo :attribute deve ser um CPF válido.');
+        }, 'O campo :attribute deve ser um CPF valido.');
 
         Validator::extend('phone_br', function ($attribute, $value) {
             return (bool) preg_match('/^\(\d{2}\) \d{4,5}\-\d{4}$/', (string) $value);

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Process;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -11,42 +11,28 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
-        $institution = $user->institution()->with([
-            'members' => function ($query) {
-                $query->orderBy('name');
-            },
-            'property',
-            'administration',
-        ])->firstOrFail();
+        $institution = $user->institution()->with('processes')->firstOrFail();
 
         $this->authorize('view', $institution);
 
-        $activeInvite = $institution->invites()->active()->latest()->first();
+        $openingProcess = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
 
-        if (!$activeInvite) {
-            $activeInvite = $institution->invites()->create([
-                'key' => Str::uuid()->toString(),
-                'status' => 'active',
-                'expires_at' => null,
+        if (!$openingProcess) {
+            $openingProcess = $institution->processes()->create([
+                'type' => Process::TYPE_INSTITUTION_OPENING,
+                'title' => Process::defaultTitleForType(Process::TYPE_INSTITUTION_OPENING),
+                'status' => Process::STATUS_IN_PROGRESS,
             ]);
         }
 
-        $inviteUrl = url(route('invite.form', ['invite' => $activeInvite->key], false));
+        $processes = $institution->processes()->latest()->get();
+        $typeDefinitions = Process::typeDefinitions();
 
-        $recentActivity = $institution->activityLogs()
-            ->with('actor')
-            ->latest('created_at')
-            ->take(10)
-            ->get();
-
-        $hasMinimumMembers = $institution->members->count() >= 1;
-
-        return view('dashboard.index', [
+        return view('dashboard.processes', [
             'institution' => $institution,
-            'members' => $institution->members,
-            'inviteUrl' => $inviteUrl,
-            'recentActivity' => $recentActivity,
-            'hasMinimumMembers' => $hasMinimumMembers,
+            'processes' => $processes,
+            'typeDefinitions' => $typeDefinitions,
+            'openingProcess' => $openingProcess,
         ]);
     }
 }

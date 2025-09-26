@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BranchLeaderController;
+use App\Http\Controllers\BranchLocationController;
+use App\Http\Controllers\BranchProcessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InitialSetupController;
 use App\Http\Controllers\InstitutionAdministrationController;
@@ -8,6 +11,8 @@ use App\Http\Controllers\InstitutionAddressController;
 use App\Http\Controllers\InstitutionPropertyController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\OpeningProcessController;
+use App\Http\Controllers\ProcessController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -27,6 +32,14 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'ensure.institution'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/processos', [ProcessController::class, 'store'])->name('processes.store');
+    Route::get('/processos/{process}', [ProcessController::class, 'show'])->name('processes.show');
+    Route::get('/processos/{process}/abertura', [OpeningProcessController::class, 'show'])->name('processes.opening.show');
+    Route::get('/processos/{process}/filial', [BranchProcessController::class, 'show'])->name('processes.branch.show');
+    Route::get('/processos/{process}/filial/localizacao', [BranchLocationController::class, 'edit'])->name('processes.branch.location.edit');
+    Route::put('/processos/{process}/filial/localizacao', [BranchLocationController::class, 'update'])->name('processes.branch.location.update');
+    Route::get('/processos/{process}/filial/dirigente', [BranchLeaderController::class, 'edit'])->name('processes.branch.leader.edit');
+    Route::put('/processos/{process}/filial/dirigente', [BranchLeaderController::class, 'update'])->name('processes.branch.leader.update');
     Route::resource('members', MemberController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::get('/administracao', [InstitutionAdministrationController::class, 'edit'])->name('administration.edit');
     Route::post('/administracao', [InstitutionAdministrationController::class, 'store'])->name('administration.store');
@@ -39,10 +52,3 @@ Route::middleware(['auth', 'ensure.institution'])->group(function () {
 Route::get('/cadastro/{invite:key}', [InviteController::class, 'showPublicForm'])->name('invite.form');
 Route::post('/cadastro/{invite:key}', [InviteController::class, 'storeMember'])->name('invite.store');
 Route::get('/cadastro/{invite:key}/confirmacao', [InviteController::class, 'showConfirmation'])->name('invite.confirmation');
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 <div class="card space-y-8">
@@ -16,31 +16,31 @@
             <div class="grid gap-4 md:grid-cols-2">
                 <div class="space-y-1 md:col-span-2">
                     <label class="form-label" for="street">Logradouro</label>
-                    <input id="street" name="street" type="text" class="form-control" value="{{ old('street', $institution->street) }}" required>
+                    <input id="street" name="street" type="text" class="form-control" value="{{ old('street', optional($location)->street) }}" required>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="number">Numero</label>
-                    <input id="number" name="number" type="text" class="form-control" value="{{ old('number', $institution->number) }}" required>
+                    <input id="number" name="number" type="text" class="form-control" value="{{ old('number', optional($location)->number) }}" required>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="complement">Complemento</label>
-                    <input id="complement" name="complement" type="text" class="form-control" value="{{ old('complement', $institution->complement) }}">
+                    <input id="complement" name="complement" type="text" class="form-control" value="{{ old('complement', optional($location)->complement) }}">
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="district">Bairro</label>
-                    <input id="district" name="district" type="text" class="form-control" value="{{ old('district', $institution->district) }}" required>
+                    <input id="district" name="district" type="text" class="form-control" value="{{ old('district', optional($location)->district) }}" required>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="city">Cidade</label>
-                    <input id="city" name="city" type="text" class="form-control" value="{{ old('city', $institution->city) }}" required>
+                    <input id="city" name="city" type="text" class="form-control" value="{{ old('city', optional($location)->city) }}" required>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="uf">UF</label>
-                    <input id="uf" name="uf" type="text" maxlength="2" class="form-control uppercase" value="{{ old('uf', $institution->uf) }}" required>
+                    <input id="uf" name="uf" type="text" maxlength="2" class="form-control uppercase" value="{{ old('uf', optional($location)->uf) }}" required>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="cep">CEP</label>
-                    <input id="cep" name="cep" type="text" class="form-control" value="{{ old('cep', $institution->cep) }}" placeholder="00000-000" required>
+                    <input id="cep" name="cep" type="text" class="form-control" value="{{ old('cep', optional($location)->cep) }}" placeholder="00000-000" required>
                 </div>
             </div>
         </section>
@@ -89,5 +89,3 @@
     });
 </script>
 @endpush
-
-

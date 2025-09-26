@@ -1,6 +1,7 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
+@php($maritalStatuses = config('people.marital_statuses'); $genders = config('people.genders'))
 <div class="card space-y-8">
     <div class="space-y-2">
         <h1 class="text-2xl font-semibold text-slate-900">Editar membro</h1>
@@ -54,7 +55,8 @@
                     <label class="form-label" for="role">Cargo</label>
                     <select id="role" name="role" class="form-control" required>
                         <option value="">Selecione</option>
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <option\ value="Presidente"\ \{\{\ old\('role',\ \$member->role\)\ ===\ 'Presidente'\ \?\ 'selected'\ :\ ''\ }}>Presidente</option>\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <option\ value="Vice\ Presidente"\ \{\{\ old\('role',\ \$member->role\)\ ===\ 'Vice\ Presidente'\ \?\ 'selected'\ :\ ''\ }}>Vice\ Presidente</option>
+                        <option value="Presidente" {{ old('role', $member->role) === 'Presidente' ? 'selected' : '' }}>Presidente</option>
+                        <option value="Vice Presidente" {{ old('role', $member->role) === 'Vice Presidente' ? 'selected' : '' }}>Vice Presidente</option>
                         <option value="Tesoureiro" {{ old('role', $member->role) === 'Tesoureiro' ? 'selected' : '' }}>Tesoureiro</option>
                         <option value="Segundo Tesoureiro" {{ old('role', $member->role) === 'Segundo Tesoureiro' ? 'selected' : '' }}>Segundo Tesoureiro</option>
                         <option value="Secretario" {{ old('role', $member->role) === 'Secretario' ? 'selected' : '' }}>Secretario</option>
@@ -63,8 +65,22 @@
                     </select>
                 </div>
                 <div class="space-y-1">
+                    <label class="form-label" for="gender">Genero</label>
+                    <select id="gender" name="gender" class="form-control" required>
+                        <option value="">Selecione</option>
+                        @foreach($genders as $gender)
+                            <option value="{{ $gender }}" {{ old('gender', $member->gender) === $gender ? 'selected' : '' }}>{{ $gender }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="space-y-1">
                     <label class="form-label" for="marital_status">Estado civil</label>
-                    <input id="marital_status" name="marital_status" type="text" class="form-control" value="{{ old('marital_status', $member->marital_status) }}" required>
+                    <select id="marital_status" name="marital_status" class="form-control" required>
+                        <option value="">Selecione</option>
+                        @foreach($maritalStatuses as $status)
+                            <option value="{{ $status }}" {{ old('marital_status', $member->marital_status) === $status ? 'selected' : '' }}>{{ $status }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="space-y-1 md:col-span-2">
                     <label class="form-label" for="profession">Profissao</label>
@@ -186,3 +202,4 @@
     });
 </script>
 @endpush
+

@@ -7,7 +7,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-800 flex flex-col">
-<header class="bg-[#660000] text-white shadow-sm">
+<header class="bg-brand text-white shadow-sm">
     <div class="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-4">
         <a href="{{ route('dashboard') }}" class="brand-logo-wrapper">
             <img src="{{ asset('images/logo-ci.png') }}" alt="Contabilidade para Igrejas" class="brand-logo-img">

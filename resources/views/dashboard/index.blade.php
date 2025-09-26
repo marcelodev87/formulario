@@ -7,9 +7,12 @@
         ? $institution->administration !== null
         : $institution->administration()->exists();
     $totalMembers = $members->count();
-    $addressComplete = collect(['street', 'number', 'district', 'city', 'uf', 'cep'])
-        ->every(fn ($field) => filled($institution->{$field}));
-    $property = $institution->property;
+    $location = $headquartersLocation ?? $institution->headquartersLocation;
+    $addressComplete = $location
+        ? collect(['street', 'number', 'district', 'city', 'uf', 'cep'])
+            ->every(fn ($field) => filled($location->{$field}))
+        : false;
+    $property = optional($location)->property;
     $hasProperty = $property !== null;
     $statusItems = [
         [
@@ -273,6 +276,7 @@
     });
 </script>
 @endpush
+
 
 
 

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@php($maritalStatuses = config('people.marital_statuses'); $genders = config('people.genders'))
 <div class="card space-y-8">
     <div class="space-y-2">
         <h1 class="text-2xl font-semibold text-slate-900">Cadastro inicial da instituicao</h1>
@@ -58,8 +59,22 @@
                     <input id="owner_rg_issuer" name="owner_rg_issuer" type="text" class="form-control" value="{{ old('owner_rg_issuer', optional($ownerMember)->rg_issuer) }}" required>
                 </div>
                 <div class="space-y-1">
+                    <label class="form-label" for="owner_gender">Genero</label>
+                    <select id="owner_gender" name="owner_gender" class="form-control" required>
+                        <option value="">Selecione</option>
+                        @foreach($genders as $gender)
+                            <option value="{{ $gender }}" {{ old('owner_gender', optional($ownerMember)->gender) === $gender ? 'selected' : '' }}>{{ $gender }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="space-y-1">
                     <label class="form-label" for="owner_marital_status">Estado civil</label>
-                    <input id="owner_marital_status" name="owner_marital_status" type="text" class="form-control" value="{{ old('owner_marital_status', optional($ownerMember)->marital_status) }}" required>
+                    <select id="owner_marital_status" name="owner_marital_status" class="form-control" required>
+                        <option value="">Selecione</option>
+                        @foreach($maritalStatuses as $status)
+                            <option value="{{ $status }}" {{ old('owner_marital_status', optional($ownerMember)->marital_status) === $status ? 'selected' : '' }}>{{ $status }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="owner_profession">Profissao</label>

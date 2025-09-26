@@ -15,8 +15,11 @@ class InstitutionAddressController extends Controller
 
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
+        $location = $institution->ensureHeadquartersLocation();
+
         return view('institution.address.edit', [
             'institution' => $institution,
+            'location' => $location,
         ]);
     }
 
@@ -28,7 +31,9 @@ class InstitutionAddressController extends Controller
 
         $data = $request->validated();
 
-        $institution->update([
+        $location = $institution->ensureHeadquartersLocation();
+
+        $location->fill([
             'street' => $data['street'],
             'number' => $data['number'],
             'complement' => $data['complement'] ?? null,
@@ -36,7 +41,9 @@ class InstitutionAddressController extends Controller
             'city' => $data['city'],
             'uf' => $data['uf'],
             'cep' => $data['cep'],
-        ]);
+        ])->save();
+
+        $location->syncInstitutionAddressIfHeadquarters();
 
         return redirect()->route('institution.address.edit')->with('status', 'Endereco atualizado com sucesso.');
     }

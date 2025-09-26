@@ -28,6 +28,8 @@ class EnsureInstitutionContext
             return redirect()->route('setup.create');
         }
 
+        $institution->ensureHeadquartersLocation();
+
         $request->attributes->set('institution', $institution);
         View::share('currentInstitution', $institution);
 

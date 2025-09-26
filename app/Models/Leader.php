@@ -2,22 +2,17 @@
 
 namespace App\Models;
 
-use App\Models\ActivityLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Member extends Model
+class Leader extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    /**
-     * @var list<string>
-     */
+    /** @var array<int, string> */
     protected $fillable = [
-        'institution_id',
+        'location_id',
         'name',
         'birth_date',
         'birthplace',
@@ -27,7 +22,6 @@ class Member extends Model
         'cpf',
         'rg',
         'rg_issuer',
-        'role',
         'gender',
         'marital_status',
         'profession',
@@ -42,20 +36,13 @@ class Member extends Model
         'cep',
     ];
 
-    /**
-     * @var array<string, string>
-     */
+    /** @var array<string, string> */
     protected $casts = [
         'birth_date' => 'date',
     ];
 
-    public function institution(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Institution::class);
-    }
-
-    public function activityLogs(): HasMany
-    {
-        return $this->hasMany(ActivityLog::class, 'entity_id')->where('entity_type', static::class);
+        return $this->belongsTo(Location::class);
     }
 }

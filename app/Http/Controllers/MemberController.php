@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MemberRequest;
+use App\Models\Institution;
 use App\Models\Member;
+use App\Models\Process;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +21,7 @@ class MemberController extends Controller
     {
         $this->authorize('viewAny', Member::class);
 
-        return redirect()->route('dashboard');
+        return $this->redirectToOpeningProcess($request->user()->institution);
     }
 
     public function edit(Member $member): View
@@ -51,7 +53,7 @@ class MemberController extends Controller
             after: $member->toArray()
         );
 
-        return redirect()->route('dashboard')->with('status', 'Dados do membro atualizados com sucesso.');
+        return $this->redirectToOpeningProcess($member->institution, 'Dados do membro atualizados com sucesso.');
     }
 
     public function destroy(Request $request, Member $member): RedirectResponse
@@ -62,7 +64,7 @@ class MemberController extends Controller
         $activeMembers = $institution->members()->count();
 
         if ($activeMembers <= 1) {
-            return back()->withErrors(['member' => 'É necessário manter ao menos um membro além do presidente.']);
+            return back()->withErrors(['member' => 'E necessario manter ao menos um membro alem do presidente.']);
         }
 
         $before = $member->toArray();
@@ -78,6 +80,17 @@ class MemberController extends Controller
             after: []
         );
 
-        return redirect()->route('dashboard')->with('status', 'Membro removido com sucesso.');
+        return $this->redirectToOpeningProcess($institution, 'Membro removido com sucesso.');
+    }
+
+    private function redirectToOpeningProcess(?Institution $institution, ?string $message = null): RedirectResponse
+    {
+        $process = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
+
+        $redirect = $process
+            ? redirect()->route('processes.show', $process)
+            : redirect()->route('dashboard');
+
+        return $message !== null ? $redirect->with('status', $message) : $redirect;
     }
 }

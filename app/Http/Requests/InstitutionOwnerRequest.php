@@ -37,7 +37,8 @@ class InstitutionOwnerRequest extends FormRequest
             'owner_mother_name' => ['required', 'string', 'max:255'],
             'owner_rg' => ['required', 'string', 'max:50'],
             'owner_rg_issuer' => ['required', 'string', 'max:50'],
-            'owner_marital_status' => ['required', 'string', 'max:100'],
+            'owner_gender' => ['required', 'string', Rule::in(config('people.genders'))],
+            'owner_marital_status' => ['required', 'string', Rule::in(config('people.marital_statuses'))],
             'owner_profession' => ['required', 'string', 'max:120'],
             'owner_street' => ['required', 'string', 'max:255'],
             'owner_number' => ['required', 'string', 'max:20'],
@@ -76,8 +77,8 @@ class InstitutionOwnerRequest extends FormRequest
     {
         return [
             'owner_cpf.regex' => 'Informe o CPF no formato 000.000.000-00.',
-            'institution_document.regex' => 'Informe o CNPJ ou CPF da instituição no formato válido.',
-            'institution_uf.regex' => 'Informe a UF com duas letras maiúsculas.',
+            'institution_document.regex' => 'Informe o CNPJ ou CPF da instituicao no formato valido.',
+            'institution_uf.regex' => 'Informe a UF com duas letras maiusculas.',
         ];
     }
 
@@ -89,8 +90,8 @@ class InstitutionOwnerRequest extends FormRequest
         return [
             'owner_cpf' => 'CPF do presidente',
             'owner_phone' => 'telefone do presidente',
-            'institution_document' => 'CNPJ ou CPF da instituição',
-            'institution_phone' => 'telefone da instituição',
+            'institution_document' => 'CNPJ ou CPF da instituicao',
+            'institution_phone' => 'telefone da instituicao',
             'owner_birth_date' => 'data de nascimento do presidente',
             'owner_birthplace' => 'naturalidade do presidente',
             'owner_nationality' => 'nacionalidade do presidente',
@@ -98,6 +99,7 @@ class InstitutionOwnerRequest extends FormRequest
             'owner_mother_name' => 'nome da mae do presidente',
             'owner_rg' => 'RG do presidente',
             'owner_rg_issuer' => 'orgao emissor do RG do presidente',
+            'owner_gender' => 'genero do presidente',
             'owner_marital_status' => 'estado civil do presidente',
             'owner_profession' => 'profissao do presidente',
             'owner_street' => 'logradouro do presidente',
