@@ -68,18 +68,18 @@
                     <label class="form-label" for="gender">Genero</label>
                     <select id="gender" name="gender" class="form-control" required>
                         <option value="">Selecione</option>
-                        @foreach($genders as $gender)
-                            <option value="{{ $gender }}" {{ old('gender', $member->gender) === $gender ? 'selected' : '' }}>{{ $gender }}</option>
-                        @endforeach
+                        <option value="Masculino" {{ old('gender', $member->gender) === 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                        <option value="Feminino" {{ old('gender', $member->gender) === 'Feminino' ? 'selected' : '' }}>Feminino</option>
                     </select>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="marital_status">Estado civil</label>
                     <select id="marital_status" name="marital_status" class="form-control" required>
                         <option value="">Selecione</option>
-                        @foreach($maritalStatuses as $status)
-                            <option value="{{ $status }}" {{ old('marital_status', $member->marital_status) === $status ? 'selected' : '' }}>{{ $status }}</option>
-                        @endforeach
+                        <option value="Divorciado(a)" {{ old('marital_status', $member->marital_status) === 'Divorciado(a)' ? 'selected' : '' }}>Divorciado(a)</option>
+                        <option value="Casado(a)" {{ old('marital_status', $member->marital_status) === 'Casado(a)' ? 'selected' : '' }}>Casado(a)</option>
+                        <option value="Solteiro(a)" {{ old('marital_status', $member->marital_status) === 'Solteiro(a)' ? 'selected' : '' }}>Solteiro(a)</option>
+                        <option value="Viúvo(a)" {{ old('marital_status', $member->marital_status) === 'Viúvo(a)' ? 'selected' : '' }}>Viúvo(a)</option>
                     </select>
                 </div>
                 <div class="space-y-1 md:col-span-2">

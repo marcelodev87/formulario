@@ -62,18 +62,18 @@
                     <label class="form-label" for="owner_gender">Genero</label>
                     <select id="owner_gender" name="owner_gender" class="form-control" required>
                         <option value="">Selecione</option>
-                        @foreach($genders as $gender)
-                            <option value="{{ $gender }}" {{ old('owner_gender', optional($ownerMember)->gender) === $gender ? 'selected' : '' }}>{{ $gender }}</option>
-                        @endforeach
+                        <option value="Masculino" {{ old('owner_gender', optional($ownerMember)->gender) === 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                        <option value="Feminino" {{ old('owner_gender', optional($ownerMember)->gender) === 'Feminino' ? 'selected' : '' }}>Feminino</option>
                     </select>
                 </div>
                 <div class="space-y-1">
                     <label class="form-label" for="owner_marital_status">Estado civil</label>
                     <select id="owner_marital_status" name="owner_marital_status" class="form-control" required>
                         <option value="">Selecione</option>
-                        @foreach($maritalStatuses as $status)
-                            <option value="{{ $status }}" {{ old('owner_marital_status', optional($ownerMember)->marital_status) === $status ? 'selected' : '' }}>{{ $status }}</option>
-                        @endforeach
+                        <option value="Divorciado(a)" {{ old('owner_marital_status', optional($ownerMember)->marital_status) === 'Divorciado(a)' ? 'selected' : '' }}>Divorciado(a)</option>
+                        <option value="Casado(a)" {{ old('owner_marital_status', optional($ownerMember)->marital_status) === 'Casado(a)' ? 'selected' : '' }}>Casado(a)</option>
+                        <option value="Solteiro(a)" {{ old('owner_marital_status', optional($ownerMember)->marital_status) === 'Solteiro(a)' ? 'selected' : '' }}>Solteiro(a)</option>
+                        <option value="Viúvo(a)" {{ old('owner_marital_status', optional($ownerMember)->marital_status) === 'Viúvo(a)' ? 'selected' : '' }}>Viúvo(a)</option>
                     </select>
                 </div>
                 <div class="space-y-1">

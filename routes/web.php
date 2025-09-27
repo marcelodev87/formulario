@@ -47,6 +47,11 @@ Route::middleware(['auth', 'ensure.institution'])->group(function () {
     Route::put('/instituicao/endereco', [InstitutionAddressController::class, 'update'])->name('institution.address.update');
     Route::get('/instituicao/imovel', [InstitutionPropertyController::class, 'edit'])->name('institution.property.edit');
     Route::put('/instituicao/imovel', [InstitutionPropertyController::class, 'update'])->name('institution.property.update');
+    Route::get('/processos/{process}/bylaws-revision', [\App\Http\Controllers\BylawsRevisionController::class, 'show'])->name('processes.bylaws_revision.show');
+    Route::post('/processos/{process}/bylaws-revision', [\App\Http\Controllers\BylawsRevisionController::class, 'save'])->name('processes.bylaws_revision.save');
+    Route::get('/processos/{process}/bylaws-revision/dashboard', [\App\Http\Controllers\BylawsRevisionController::class, 'dashboard'])->name('processes.bylaws_revision.dashboard');
+    Route::get('/processos/{process}/bylaws-revision/motivo/{motivo}/edit', [\App\Http\Controllers\BylawsRevisionController::class, 'editMotivo'])->name('processes.bylaws_revision.edit_motivo');
+    Route::put('/processos/{process}/bylaws-revision/motivo/{motivo}', [\App\Http\Controllers\BylawsRevisionController::class, 'updateMotivo'])->name('processes.bylaws_revision.update_motivo');
 });
 
 Route::get('/cadastro/{invite:key}', [InviteController::class, 'showPublicForm'])->name('invite.form');
