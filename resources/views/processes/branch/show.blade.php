@@ -13,7 +13,7 @@
                 <p><span class="font-semibold text-slate-800">Documento:</span> {{ $institution->document }}</p>
             </div>
         </div>
-        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+
             <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{{ $process->status_label }}</span>
             <span>Atualizado em {{ $process->updated_at->format('d/m/Y H:i') }}</span>
         </div>
@@ -25,6 +25,45 @@
                 <p class="text-sm text-slate-700">E-mail: {{ $leader->email }}</p>
             @else
                 <p class="mt-1 text-sm text-slate-700">Cadastre o dirigente para definir o responsavel pela filial.</p>
+                @php
+                    $invite = \App\Models\BranchLeaderInvite::where('process_id', $process->id)->active()->first();
+                @endphp
+                @if($invite)
+                <div class="card space-y-4">
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <h2 class="text-xl font-semibold text-slate-900">Convite para dirigente</h2>
+                        <a href="{{ url('/cadastro-dirigente/' . $invite->key) }}" target="_blank" class="link text-sm font-semibold">Abrir formulario publico</a>
+                    </div>
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center">
+                        <input type="text" id="dirigente-link" value="{{ url('/cadastro-dirigente/' . $invite->key) }}" readonly class="form-control md:flex-1">
+                        <button type="button" class="btn" id="copy-dirigente">Copiar link</button>
+                    </div>
+                    <p class="text-xs text-slate-500">O link permanece ativo ate ser revogado ou expirado.</p>
+                </div>
+                @push('scripts')
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var button = document.getElementById('copy-dirigente');
+                        if (!button) return;
+                        var input = document.getElementById('dirigente-link');
+                        var defaultLabel = button.textContent;
+                        button.addEventListener('click', async function () {
+                            try {
+                                await navigator.clipboard.writeText(input.value);
+                                button.textContent = 'Copiado!';
+                            } catch (error) {
+                                input.select();
+                                document.execCommand('copy');
+                                button.textContent = 'Copiado!';
+                            }
+                            setTimeout(function () {
+                                button.textContent = defaultLabel;
+                            }, 2000);
+                        });
+                    });
+                </script>
+                @endpush
+                @endif
             @endif
         </div>
     </div>

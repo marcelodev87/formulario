@@ -24,14 +24,7 @@
             </div>
         </section>
 
-        {{-- Exemplo de campo condicional: Upload IPTU --}}
-        <section class="space-y-4" id="iptu-upload-section" style="display:none;">
-            <h2 class="text-lg font-semibold">IPTU Atualizado</h2>
-            <div class="space-y-2">
-                <label class="form-label" for="iptu_atualizado">Anexe o IPTU atualizado:</label>
-                <input type="file" name="iptu_atualizado" id="iptu_atualizado" class="form-control">
-            </div>
-        </section>
+
 
         {{-- Outras etapas dinâmicas podem ser renderizadas aqui --}}
 
@@ -42,18 +35,4 @@
 </div>
 @endsection
 
-@push('scripts')
-<script>
-    // Exemplo de regra condicional visual
-    document.addEventListener('DOMContentLoaded', function () {
-        const motivosCheckboxes = document.querySelectorAll('input[name="motivos[]"]');
-        const iptuSection = document.getElementById('iptu-upload-section');
-        motivosCheckboxes.forEach(cb => {
-            cb.addEventListener('change', function () {
-                const checked = Array.from(motivosCheckboxes).some(c => c.checked && c.value === 'mudanca_endereco');
-                iptuSection.style.display = checked ? '' : 'none';
-            });
-        });
-    });
-</script>
-@endpush
+

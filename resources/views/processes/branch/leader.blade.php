@@ -1,8 +1,9 @@
 ﻿@extends('layouts.app')
 
 @section('content')
-@php($maritalStatuses = config('people.marital_statuses'); $genders = config('people.genders'))
 @php
+    $maritalStatuses = config('people.marital_statuses');
+    $genders = config('people.genders');
     $leaderExists = $leader->exists;
 @endphp
 <div class="space-y-8">

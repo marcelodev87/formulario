@@ -123,7 +123,10 @@
         </section>
 
         <div class="flex flex-wrap justify-end gap-3">
-            <a href="{{ route('processes.show', $process) }}" class="btn-secondary-sm">Visao geral do processo</a>`r`n            @if($location->exists)`r`n                <a href="{{ route('processes.branch.leader.edit', $process) }}" class="btn-secondary-sm">Dados do dirigente</a>`r`n            @endif
+            <a href="{{ route('processes.show', $process) }}" class="btn-secondary-sm">Visao geral do processo</a>
+            @if($location->exists)
+                <a href="{{ route('processes.branch.leader.edit', $process) }}" class="btn-secondary-sm">Dados do dirigente</a>
+            @endif
             <button type="submit" class="btn">Salvar dados da filial</button>
         </div>
     </form>

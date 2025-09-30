@@ -39,6 +39,7 @@ class InviteController extends Controller
 
         $validated = $request->validated();
         $validated['uf'] = strtoupper($validated['uf']);
+        $validated['process_id'] = $invite->process_id;
 
         $member = $invite->institution->members()->create($validated);
 

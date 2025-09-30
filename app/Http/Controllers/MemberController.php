@@ -21,7 +21,7 @@ class MemberController extends Controller
     {
         $this->authorize('viewAny', Member::class);
 
-        return $this->redirectToOpeningProcess($request->user()->institution);
+        return $this->redirectAfterAction($request, $request->user()->institution);
     }
 
     public function edit(Member $member): View
@@ -53,7 +53,7 @@ class MemberController extends Controller
             after: $member->toArray()
         );
 
-        return $this->redirectToOpeningProcess($member->institution, 'Dados do membro atualizados com sucesso.');
+        return $this->redirectAfterAction($request, $member->institution, 'Dados do membro atualizados com sucesso.');
     }
 
     public function destroy(Request $request, Member $member): RedirectResponse
@@ -80,11 +80,28 @@ class MemberController extends Controller
             after: []
         );
 
-        return $this->redirectToOpeningProcess($institution, 'Membro removido com sucesso.');
+        return $this->redirectAfterAction($request, $institution, 'Membro removido com sucesso.');
     }
 
-    private function redirectToOpeningProcess(?Institution $institution, ?string $message = null): RedirectResponse
+    private function redirectAfterAction(Request $request, ?Institution $institution, ?string $message = null): RedirectResponse
     {
+        $redirectTo = (string) $request->input('redirect_to', '');
+        $processId = $request->input('process_id');
+        $processId = is_numeric($processId) ? (int) $processId : null;
+
+        if ($redirectTo === Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION && $processId !== null) {
+            $process = Process::query()
+                ->whereKey($processId)
+                ->when($institution, fn ($query) => $query->where('institution_id', $institution->id))
+                ->first();
+
+            if ($process && $process->type === Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION) {
+                $redirect = redirect()->route('processes.board_election.members', $process);
+
+                return $message !== null ? $redirect->with('status', $message) : $redirect;
+            }
+        }
+
         $process = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
 
         $redirect = $process

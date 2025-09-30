@@ -26,19 +26,21 @@
         <p class="text-sm text-slate-600 mb-2">Selecione o tipo de processo desejado e personalize o nome se necessário.</p>
         <form method="POST" action="{{ route('processes.store') }}" class="space-y-4">
             @csrf
-            <div class="space-y-2">
-                <label class="form-label" for="process-type">Tipo de processo</label>
-                <select id="process-type" name="type" class="form-control" required>
-                    @foreach($typeDefinitions as $type => $definition)
-                        <option value="{{ $type }}" @selected(old('type', $initialType) === $type)>
-                            {{ $definition['label'] }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="space-y-2">
-                <label class="form-label" for="process-title">Nome do processo (opcional)</label>
-                <input id="process-title" name="title" type="text" class="form-control" value="{{ old('title') }}" maxlength="255" placeholder="Ex.: Abertura 2025">
+            <div class="flex flex-col md:flex-row md:gap-4">
+                <div class="flex-1 space-y-2">
+                    <label class="form-label" for="process-type">Tipo de processo</label>
+                    <select id="process-type" name="type" class="form-control" required>
+                        @foreach($typeDefinitions as $type => $definition)
+                            <option value="{{ $type }}" @selected(old('type', $initialType) === $type)>
+                                {{ $definition['label'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex-1 space-y-2 mt-4 md:mt-0">
+                    <label class="form-label" for="process-title">Nome do processo (opcional)</label>
+                    <input id="process-title" name="title" type="text" class="form-control" value="{{ old('title') }}" maxlength="255" placeholder="Ex.: Abertura 2025">
+                </div>
             </div>
             <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600" id="process-description">
                 @if($initialType && isset($typeDefinitions[$initialType]['description']))
@@ -94,6 +96,8 @@
                                     <a href="{{ route('processes.opening.show', $process) }}" class="btn btn-sm {{ $btnColor }} w-40 flex items-center justify-center text-sm font-normal">Visualizar processo</a>
                                 @elseif($process->type === 'branch_opening')
                                     <a href="{{ route('processes.branch.show', $process) }}" class="btn btn-sm {{ $btnColor }} w-40 flex items-center justify-center text-sm font-normal">Visualizar processo</a>
+                                @elseif($process->type === 'board_election')
+                                    <a href="{{ route('processes.board_election.dashboard', $process) }}" class="btn btn-sm {{ $btnColor }} w-40 flex items-center justify-center text-sm font-normal">Visualizar processo</a>
                                 @else
                                     <a href="{{ route('processes.show', $process) }}" class="btn btn-sm {{ $btnColor }} w-40 flex items-center justify-center text-sm font-normal">Visualizar processo</a>
                                 @endif

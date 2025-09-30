@@ -69,6 +69,11 @@ class InitialSetupController extends Controller
                 'cep' => $validated['institution_cep'],
             ]);
 
+
+            // Vincula o usuário à instituição criada
+            $user->institution_id = $institution->id;
+            $user->save();
+
             $this->activityLogger->log(
                 actor: $user,
                 institution: $institution,

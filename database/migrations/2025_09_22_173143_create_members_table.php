@@ -39,7 +39,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['institution_id', 'email']);
-            $table->unique(['institution_id', 'cpf']);
+            // CPF pode se repetir, não aplicar unique
         });
     }
 

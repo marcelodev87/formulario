@@ -21,17 +21,7 @@ class MemberRequest extends FormRequest
             ?? $this->user()?->institution?->id;
 
         $emailRule = Rule::unique('members', 'email');
-        $cpfRule = Rule::unique('members', 'cpf');
-
-        if ($institutionId) {
-            $emailRule = $emailRule->where(fn ($query) => $query->where('institution_id', $institutionId));
-            $cpfRule = $cpfRule->where(fn ($query) => $query->where('institution_id', $institutionId));
-        }
-
-        if ($member) {
-            $emailRule = $emailRule->ignore($member->id);
-            $cpfRule = $cpfRule->ignore($member->id);
-        }
+        // CPF pode ser repetido, não aplicar unique
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -45,7 +35,7 @@ class MemberRequest extends FormRequest
                 'string',
                 'cpf',
                 'regex:/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/',
-                $cpfRule,
+                // sem unique
             ],
             'rg' => ['required', 'string', 'max:50'],
             'rg_issuer' => ['required', 'string', 'max:50'],

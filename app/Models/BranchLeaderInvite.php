@@ -38,4 +38,9 @@ class BranchLeaderInvite extends Model
             $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
         });
     }
+
+    public function getRouteKeyName()
+    {
+        return 'key';
+    }
 }

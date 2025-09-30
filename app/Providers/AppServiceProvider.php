@@ -33,9 +33,6 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->ip());
         });
 
-        Route::bind('invite', function (string $value) {
-            return Invite::where('key', $value)->firstOrFail();
-        });
 
         Route::bind('process', function (string $value) {
             $user = request()->user();

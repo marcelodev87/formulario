@@ -16,6 +16,7 @@ class Invite extends Model
      */
     protected $fillable = [
         'institution_id',
+        'process_id',
         'key',
         'status',
         'expires_at',
@@ -31,6 +32,11 @@ class Invite extends Model
     public function institution(): BelongsTo
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    public function process(): BelongsTo
+    {
+        return $this->belongsTo(Process::class);
     }
 
     public function isExpired(): bool

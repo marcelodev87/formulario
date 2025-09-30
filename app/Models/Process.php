@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Process extends Model
@@ -14,6 +15,7 @@ class Process extends Model
 
     public const TYPE_INSTITUTION_OPENING = 'institution_opening';
     public const TYPE_BRANCH_OPENING = 'branch_opening';
+    public const TYPE_BOARD_ELECTION_MINUTES_REGISTRATION = 'board_election_minutes_registration';
 
     public const STATUS_DRAFT = 'draft';
     public const STATUS_IN_PROGRESS = 'in_progress';
@@ -26,11 +28,13 @@ class Process extends Model
         'title',
         'status',
         'meta',
+        'answers',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
         'meta' => 'array',
+        'answers' => 'array',
     ];
 
     protected static ?array $typeDefinitionsCache = null;
@@ -44,6 +48,12 @@ class Process extends Model
     {
         return $this->hasOne(Location::class);
     }
+
+    public function members(): HasMany
+    {
+        return $this->hasMany(Member::class);
+    }
+
 
     public function type(): BelongsTo
     {
@@ -136,3 +146,5 @@ class Process extends Model
         self::$typeDefinitionsCache = null;
     }
 }
+
+

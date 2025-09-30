@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Process;
@@ -8,6 +7,20 @@ use Illuminate\View\View;
 
 class BylawsRevisionController extends Controller
 {
+    public function deleteStatute(Process $process)
+    {
+        $answers = $process->answers ?? [];
+        if (!empty($answers['estatuto_file'])) {
+            $filePath = $answers['estatuto_file'];
+            // Remove o arquivo do storage se existir
+            \Storage::disk('public')->delete($filePath);
+            unset($answers['estatuto_file']);
+            $process->answers = $answers;
+            $process->save();
+        }
+        return redirect()->route('processes.bylaws_revision.dashboard', $process)
+            ->with('status', 'Arquivo do estatuto excluído com sucesso.');
+    }
     public function show(Request $request, Process $process): View
     {
         // Verifica se o tipo do processo é reforma de estatuto
@@ -66,5 +79,26 @@ class BylawsRevisionController extends Controller
         $process->save();
         return redirect()->route('processes.bylaws_revision.dashboard', $process)
             ->with('status', 'Informações do motivo atualizadas com sucesso.');
+    }
+
+    public function uploadStatute(Process $process)
+    {
+        return view('processes.bylaws_revision.upload_statute', [
+            'process' => $process,
+        ]);
+    }
+
+    public function saveStatute(Request $request, Process $process)
+    {
+        if ($request->hasFile('estatuto_file')) {
+            $file = $request->file('estatuto_file');
+            $path = $file->store('estatutos', 'public');
+            $answers = $process->answers ?? [];
+            $answers['estatuto_file'] = $path;
+            $process->answers = $answers;
+            $process->save();
+        }
+        return redirect()->route('processes.bylaws_revision.dashboard', $process)
+            ->with('status', 'Arquivo do estatuto salvo com sucesso.');
     }
 }

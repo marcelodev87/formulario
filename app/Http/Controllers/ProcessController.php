@@ -39,7 +39,21 @@ class ProcessController extends Controller
             'status' => Process::STATUS_IN_PROGRESS,
         ]);
 
-        // Redireciona para a tela de configuração inicial do processo, conforme o tipo
+        // Cria convite de dirigente automaticamente para filial
+        if ($process->type === Process::TYPE_BRANCH_OPENING) {
+            \App\Models\BranchLeaderInvite::firstOrCreate(
+                [
+                    'process_id' => $process->id,
+                    'status' => 'active',
+                ],
+                [
+                    'key' => \Illuminate\Support\Str::uuid(),
+                    'expires_at' => now()->addDays(7),
+                ]
+            );
+        }
+
+        // Redireciona para a tela de configuracao inicial do processo, conforme o tipo
         switch ($process->type) {
             case Process::TYPE_INSTITUTION_OPENING:
                 return redirect()->route('processes.opening.show', $process)
@@ -49,6 +63,9 @@ class ProcessController extends Controller
                     ->with('status', 'Processo criado com sucesso.');
             case 'bylaws_revision':
                 return redirect()->route('processes.bylaws_revision.show', $process)
+                    ->with('status', 'Processo criado com sucesso.');
+            case Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION:
+                return redirect()->route('processes.board_election.dashboard', $process)
                     ->with('status', 'Processo criado com sucesso.');
             default:
                 return redirect()->route('dashboard')->with('error', 'Este processo ainda nao possui paginas configuradas.');
@@ -63,7 +80,10 @@ class ProcessController extends Controller
             Process::TYPE_INSTITUTION_OPENING => redirect()->route('processes.opening.show', $process),
             Process::TYPE_BRANCH_OPENING => redirect()->route('processes.branch.show', $process),
             'bylaws_revision' => redirect()->route('processes.bylaws_revision.show', $process),
+            Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION => redirect()->route('processes.board_election.dashboard', $process),
             default => redirect()->route('dashboard')->with('error', 'Este processo ainda nao possui paginas configuradas.'),
         };
     }
 }
+
+

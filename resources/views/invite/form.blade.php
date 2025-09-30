@@ -1,7 +1,10 @@
 ﻿@extends('layouts.app')
 
 @section('content')
-@php($maritalStatuses = config('people.marital_statuses'); $genders = config('people.genders'))
+@php
+    $maritalStatuses = config('people.marital_statuses');
+    $genders = config('people.genders');
+@endphp
 <div class="card space-y-8">
     <div class="space-y-2">
         <h1 class="text-2xl font-semibold text-slate-900">Cadastro de membro</h1>

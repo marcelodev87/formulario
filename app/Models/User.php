@@ -44,8 +44,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function institution(): HasOne
+    public function institution()
     {
-        return $this->hasOne(Institution::class, 'owner_user_id');
+        return $this->belongsTo(Institution::class);
     }
 }

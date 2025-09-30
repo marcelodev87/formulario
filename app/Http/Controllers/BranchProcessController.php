@@ -10,6 +10,16 @@ class BranchProcessController extends Controller
 {
     public function show(Request $request, Process $process): View
     {
+        // Garante que sempre exista um convite ativo para o dirigente
+        $invite = \App\Models\BranchLeaderInvite::where('process_id', $process->id)->active()->first();
+        if (!$invite) {
+            $invite = \App\Models\BranchLeaderInvite::create([
+                'process_id' => $process->id,
+                'key' => \Illuminate\Support\Str::uuid(),
+                'status' => 'active',
+                'expires_at' => now()->addDays(7),
+            ]);
+        }
         abort_if($process->type !== Process::TYPE_BRANCH_OPENING, 404);
 
         $this->authorize('view', $process);
