@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/processos/{process}/bylaws-revision/upload-estatuto', [\App\Http\Controllers\BylawsRevisionController::class, 'saveStatute'])->name('processes.bylaws_revision.save_statute');
         Route::delete('/processos/{process}/bylaws-revision/delete-estatuto', [\App\Http\Controllers\BylawsRevisionController::class, 'deleteStatute'])->name('processes.bylaws_revision.delete_statute');
         // Dashboard do processo de ata de eleição da diretoria
+        Route::post('/processos/{process}/ata-eleicao/mandato', [\App\Http\Controllers\BoardElectionProcessController::class, 'storeMandate'])->name('processes.board_election.mandate.store');
+        Route::post('/processos/{process}/ata-eleicao/membros', [App\Http\Controllers\MemberController::class, 'storeForBoardElection'])->name('processes.board_election.members.store');
+        Route::post('/processos/{process}/ata-eleicao/documentos', [\App\Http\Controllers\BoardElectionProcessController::class, 'storeDocuments'])->name('processes.board_election.documents.store');
         Route::get('/processos/{process}/ata-eleicao/membros', [\App\Http\Controllers\BoardElectionProcessController::class, 'members'])->name('processes.board_election.members');
         Route::get('/processos/{process}/ata-eleicao/dashboard', [\App\Http\Controllers\BoardElectionProcessController::class, 'dashboard'])->name('processes.board_election.dashboard');
     });

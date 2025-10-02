@@ -14,15 +14,6 @@ class MemberRequest extends FormRequest
 
     public function rules(): array
     {
-        $member = $this->route('member');
-        $invite = $this->route('invite');
-        $institutionId = $member?->institution_id
-            ?? $invite?->institution_id
-            ?? $this->user()?->institution?->id;
-
-        $emailRule = Rule::unique('members', 'email');
-        // CPF pode ser repetido, não aplicar unique
-
         return [
             'name' => ['required', 'string', 'max:255'],
             'birth_date' => ['required', 'date', 'before:today'],
@@ -54,7 +45,7 @@ class MemberRequest extends FormRequest
             'gender' => ['required', 'string', Rule::in(config('people.genders'))],
             'marital_status' => ['required', 'string', Rule::in(config('people.marital_statuses'))],
             'profession' => ['required', 'string', 'max:120'],
-            'email' => ['required', 'email:rfc,dns', $emailRule],
+            'email' => ['required', 'email:rfc,dns'],
             'phone' => ['required', 'string', 'phone_br'],
             'street' => ['required', 'string', 'max:255'],
             'number' => ['required', 'string', 'max:20'],
@@ -65,5 +56,4 @@ class MemberRequest extends FormRequest
             'cep' => ['required', 'string', 'cep'],
         ];
     }
-
 }

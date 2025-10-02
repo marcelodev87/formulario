@@ -24,6 +24,35 @@ class MemberController extends Controller
         return $this->redirectAfterAction($request, $request->user()->institution);
     }
 
+    public function storeForBoardElection(MemberRequest $request, Process $process): RedirectResponse
+    {
+        $this->authorize('view', $process);
+
+        abort_if($process->type !== Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION, 404);
+
+        $institution = $process->institution;
+
+        $data = $request->validated();
+        $data['institution_id'] = $institution->id;
+        $data['process_id'] = $process->id;
+        $data['uf'] = strtoupper($data['uf']);
+
+        $member = Member::create($data);
+
+        $this->activityLogger->log(
+            actor: $request->user(),
+            institution: $institution,
+            entityType: Member::class,
+            entityId: $member->id,
+            action: 'created',
+            before: [],
+            after: $member->toArray()
+        );
+
+        return redirect()->route('processes.board_election.dashboard', $process)
+            ->with('status', 'Membro cadastrado com sucesso.');
+    }
+
     public function edit(Member $member): View
     {
         $this->authorize('update', $member);
@@ -96,7 +125,7 @@ class MemberController extends Controller
                 ->first();
 
             if ($process && $process->type === Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION) {
-                $redirect = redirect()->route('processes.board_election.members', $process);
+                $redirect = redirect()->route('processes.board_election.dashboard', $process);
 
                 return $message !== null ? $redirect->with('status', $message) : $redirect;
             }
@@ -111,3 +140,4 @@ class MemberController extends Controller
         return $message !== null ? $redirect->with('status', $message) : $redirect;
     }
 }
+

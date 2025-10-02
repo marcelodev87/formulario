@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Mandate;
 use App\Models\Process;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class BoardElectionProcessController extends Controller
@@ -24,7 +26,68 @@ class BoardElectionProcessController extends Controller
             'institution' => $context['institution'],
             'shareUrl' => $context['shareUrl'],
             'statusItems' => $statusItems,
+            'members' => $context['members'],
+            'mandate' => $context['mandate'],
         ]);
+    }
+
+    public function storeMandate(Request $request, Process $process): RedirectResponse
+    {
+        $this->authorize('view', $process);
+
+        $process = $this->ensureBoardElectionProcess($process);
+
+        $validated = $request->validate([
+            'mandate_start' => ['required', 'date'],
+            'mandate_duration' => ['required', 'integer', 'min:1', 'max:10'],
+        ]);
+
+        Mandate::updateOrCreate(
+            ['process_id' => $process->id],
+            [
+                'start_date' => $validated['mandate_start'],
+                'duration_years' => $validated['mandate_duration'],
+            ]
+        );
+
+        return redirect()->route('processes.board_election.dashboard', $process)
+            ->with('status', 'Mandato atualizado com sucesso.');
+    }
+
+
+
+    public function storeDocuments(Request $request, Process $process): RedirectResponse
+    {
+        $this->authorize('view', $process);
+
+        $process = $this->ensureBoardElectionProcess($process);
+
+        $validated = $request->validate([
+            'minutes_file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'bylaws_file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+        ]);
+
+        $answers = $process->answers ?? [];
+
+        if ($request->hasFile('minutes_file')) {
+            if (!empty($answers['minutes_file'])) {
+                Storage::disk('public')->delete($answers['minutes_file']);
+            }
+            $answers['minutes_file'] = $request->file('minutes_file')->store('board_election/minutes', 'public');
+        }
+
+        if ($request->hasFile('bylaws_file')) {
+            if (!empty($answers['bylaws_file'])) {
+                Storage::disk('public')->delete($answers['bylaws_file']);
+            }
+            $answers['bylaws_file'] = $request->file('bylaws_file')->store('board_election/bylaws', 'public');
+        }
+
+        $process->answers = $answers;
+        $process->save();
+
+        return redirect()->route('processes.board_election.dashboard', $process)
+            ->with('status', 'Documentos salvos com sucesso.');
     }
 
     public function members(Request $request, Process $process): View
@@ -65,6 +128,7 @@ class BoardElectionProcessController extends Controller
      *     members: \Illuminate\Support\Collection<int, \App\Models\Member>,
      *     missingRoles: array<int, string>,
      *     hasRequiredBoard: bool,
+     *     mandate: ?\App\Models\Mandate,
      *     requiredRoles: array<int, string>
      * }
      */
@@ -99,6 +163,8 @@ class BoardElectionProcessController extends Controller
             ->all();
         $hasRequiredBoard = $missingRoles === [];
 
+
+        $mandate = Mandate::where('process_id', $process->id)->latest()->first();
         return [
             'institution' => $institution,
             'shareUrl' => $shareUrl,
@@ -106,6 +172,7 @@ class BoardElectionProcessController extends Controller
             'missingRoles' => $missingRoles,
             'hasRequiredBoard' => $hasRequiredBoard,
             'requiredRoles' => $requiredRoles,
+            'mandate' => $mandate,
         ];
     }
 
@@ -128,7 +195,8 @@ class BoardElectionProcessController extends Controller
      *     shareUrl: string,
      *     members: \Illuminate\Support\Collection<int, \App\Models\Member>,
      *     missingRoles: array<int, string>,
-     *     hasRequiredBoard: bool
+     *     hasRequiredBoard: bool,
+     *     mandate: ?\App\Models\Mandate
      * } $context
      *
      * @return array<int, array<string, mixed>>
@@ -140,6 +208,7 @@ class BoardElectionProcessController extends Controller
         $missingRoles = $context['missingRoles'];
         $hasRequiredBoard = $context['hasRequiredBoard'];
 
+        $mandate = $context['mandate'];
         $membersDescription = $hasRequiredBoard
             ? 'Cargos essenciais preenchidos para registrar a ata.'
             : 'Ainda faltam os cargos: ' . implode(', ', $missingRoles) . '.';
@@ -147,7 +216,6 @@ class BoardElectionProcessController extends Controller
             $membersDescription = 'Cadastre os membros da diretoria responsaveis pela ata.';
         }
 
-        $mandate = Mandate::where('process_id', $process->id)->latest()->first();
         $mandateComplete = $mandate !== null;
 
         if ($mandateComplete) {
@@ -176,7 +244,7 @@ class BoardElectionProcessController extends Controller
         } elseif ($hasBylaws) {
             $documentsMeta = 'Estatuto anexado; ata pendente.';
         } else {
-            $documentsMeta = 'Nenhum documento anexado.';
+            $documentsMeta = 'Nenhum documento enviado.';
         }
 
         $documentsComplete = $hasMinutes && $hasBylaws;
@@ -199,7 +267,8 @@ class BoardElectionProcessController extends Controller
                 'meta' => $mandateMeta,
                 'description' => 'Defina vigencia atual antes de emitir a ata.',
                 'complete' => $mandateComplete,
-                'action' => '#modal-mandate-config',
+                'action' => null,
+                'modal' => 'mandate',
                 'action_label' => $mandateComplete ? 'Atualizar mandato' : 'Configurar mandato',
             ],
             [
@@ -209,10 +278,12 @@ class BoardElectionProcessController extends Controller
                 'meta' => $documentsMeta,
                 'description' => 'Anexe a ultima ata registrada e o estatuto vigente.',
                 'complete' => $documentsComplete,
-                'action' => '#modal-upload-minutes',
+                'action' => null,
+                'modal' => 'documents',
                 'action_label' => $documentsComplete ? 'Gerenciar anexos' : 'Anexar documentos',
             ],
         ];
     }
 }
+
 

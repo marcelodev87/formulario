@@ -7,101 +7,157 @@
         'redirect_to' => \App\Models\Process::TYPE_BOARD_ELECTION_MINUTES_REGISTRATION,
         'process_id' => $process->id,
     ];
+    $maritalStatuses = config('people.marital_statuses');
+    $genders = config('people.genders');
 @endphp
 <div class="space-y-8">
-    <div class="card space-y-3">
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-slate-500">PROCESSO</p>
-                <h1 class="text-2xl font-semibold text-slate-900">Registro de Ata de Eleicao da Diretoria</h1>
-                <p class="text-sm text-slate-600">Gerencie os membros vinculados a este processo.</p>
-            </div>
-            <div class="rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-600">
-                <p><span class="font-semibold text-slate-800">Instituicao:</span> {{ $institution->name }}</p>
-                <p><span class="font-semibold text-slate-800">Documento:</span> {{ $institution->document }}</p>
-            </div>
+    <div class="card space-y-6">
+        <div class="space-y-2">
+            <h2 class="text-lg font-semibold text-slate-900">Cadastrar novo membro</h2>
+            <p class="text-sm text-slate-600">Preencha os dados abaixo para adicionar um membro da diretoria neste processo.</p>
         </div>
-        <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('processes.board_election.dashboard', $process) }}" class="btn-secondary-sm">Voltar ao dashboard</a>
-            <span class="text-slate-400">ou</span>
-            <span class="text-slate-600">compartilhe o link publico abaixo.</span>
-        </div>
-    </div>
-
-    <div class="card space-y-4">
-        <div>
-            <h2 class="text-lg font-semibold text-slate-900">Link de cadastro para a diretoria</h2>
-            <p class="text-sm text-slate-600">Envie aos membros para que preencham os dados sem necessidade de login.</p>
-        </div>
-        <div class="flex flex-col gap-2 md:flex-row md:items-center">
-            <input type="text" class="form-control md:flex-1" value="{{ $shareUrl }}" readonly>
-            <button type="button" class="btn-secondary-sm" onclick="navigator.clipboard.writeText('{{ $shareUrl }}')">Copiar link</button>
-        </div>
-    </div>
-
-    <div class="card space-y-3">
-        @if(!$hasRequiredBoard)
-            <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                Ainda faltam os cargos: {{ implode(', ', $missingRoles) }}.
-            </div>
-        @else
+        @if(session('status'))
             <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                Cargos essenciais preenchidos. Diretoria pronta para registrar a ata.
+                {{ session('status') }}
             </div>
         @endif
-        <p class="text-xs uppercase tracking-wide text-slate-500">Cargos monitorados</p>
-        <p class="text-sm text-slate-600">{{ implode(' | ', $requiredRoles) }}</p>
+        @if($errors->any())
+            <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                <p class="font-semibold">Revise os campos abaixo:</p>
+                <ul class="mt-2 list-disc space-y-1 pl-5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <form method="POST" action="{{ route('processes.board_election.members.store', $process) }}" class="space-y-6">
+            @csrf
+            <section class="space-y-4">
+                <h3 class="text-lg font-semibold">Dados pessoais</h3>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="space-y-1">
+                        <label class="form-label" for="name">Nome completo</label>
+                        <input id="name" name="name" type="text" class="form-control" value="{{ old('name') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="birth_date">Data de nascimento</label>
+                        <input id="birth_date" name="birth_date" type="date" class="form-control" value="{{ old('birth_date') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="birthplace">Naturalidade</label>
+                        <input id="birthplace" name="birthplace" type="text" class="form-control" value="{{ old('birthplace') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="nationality">Nacionalidade</label>
+                        <input id="nationality" name="nationality" type="text" class="form-control" value="{{ old('nationality') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="father_name">Nome do pai</label>
+                        <input id="father_name" name="father_name" type="text" class="form-control" value="{{ old('father_name') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="mother_name">Nome da mae</label>
+                        <input id="mother_name" name="mother_name" type="text" class="form-control" value="{{ old('mother_name') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="cpf">CPF</label>
+                        <input id="cpf" name="cpf" type="text" class="form-control" data-mask="cpf" placeholder="000.000.000-00" value="{{ old('cpf') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="rg">RG</label>
+                        <input id="rg" name="rg" type="text" class="form-control" value="{{ old('rg') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="rg_issuer">Orgao emissor</label>
+                        <input id="rg_issuer" name="rg_issuer" type="text" class="form-control" value="{{ old('rg_issuer') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="role">Cargo</label>
+                        <select id="role" name="role" class="form-control" required>
+                            <option value="">Selecione</option>
+                            <option value="Presidente" {{ old('role') === 'Presidente' ? 'selected' : '' }}>Presidente</option>
+                            <option value="Vice Presidente" {{ old('role') === 'Vice Presidente' ? 'selected' : '' }}>Vice Presidente</option>
+                            <option value="Tesoureiro" {{ old('role') === 'Tesoureiro' ? 'selected' : '' }}>Tesoureiro</option>
+                            <option value="Segundo Tesoureiro" {{ old('role') === 'Segundo Tesoureiro' ? 'selected' : '' }}>Segundo Tesoureiro</option>
+                            <option value="Secretario" {{ old('role') === 'Secretario' ? 'selected' : '' }}>Secretario</option>
+                            <option value="Segundo Secretario" {{ old('role') === 'Segundo Secretario' ? 'selected' : '' }}>Segundo Secretario</option>
+                            <option value="Conselho Fiscal" {{ old('role') === 'Conselho Fiscal' ? 'selected' : '' }}>Conselho Fiscal</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="gender">Genero</label>
+                        <select id="gender" name="gender" class="form-control" required>
+                            <option value="">Selecione</option>
+                            @foreach($genders as $gender)
+                                <option value="{{ $gender }}" {{ old('gender') === $gender ? 'selected' : '' }}>{{ $gender }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="marital_status">Estado civil</label>
+                        <select id="marital_status" name="marital_status" class="form-control" required>
+                            <option value="">Selecione</option>
+                            @foreach($maritalStatuses as $status)
+                                <option value="{{ $status }}" {{ old('marital_status') === $status ? 'selected' : '' }}>{{ $status }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="profession">Profissao</label>
+                        <input id="profession" name="profession" type="text" class="form-control" value="{{ old('profession') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="email">Email</label>
+                        <input id="email" name="email" type="email" class="form-control" value="{{ old('email') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="phone">Telefone</label>
+                        <input id="phone" name="phone" type="text" class="form-control" data-mask="phone" value="{{ old('phone') }}" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-4">
+                <h3 class="text-lg font-semibold">Endereco</h3>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="space-y-1">
+                        <label class="form-label" for="street">Rua</label>
+                        <input id="street" name="street" type="text" class="form-control" value="{{ old('street') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="number">Numero</label>
+                        <input id="number" name="number" type="text" class="form-control" value="{{ old('number') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="complement">Complemento</label>
+                        <input id="complement" name="complement" type="text" class="form-control" value="{{ old('complement') }}">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="district">Bairro</label>
+                        <input id="district" name="district" type="text" class="form-control" value="{{ old('district') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="city">Cidade</label>
+                        <input id="city" name="city" type="text" class="form-control" value="{{ old('city') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="uf">UF</label>
+                        <input id="uf" name="uf" type="text" maxlength="2" class="form-control uppercase" value="{{ old('uf') }}" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="form-label" for="cep">CEP</label>
+                        <input id="cep" name="cep" type="text" class="form-control" data-mask="cep" placeholder="00000-000" value="{{ old('cep') }}" required>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex justify-end gap-3">
+                <button type="submit" class="btn">Salvar membro</button>
+            </div>
+        </form>
     </div>
 
-    <div class="card space-y-4">
-        <div class="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-            <div>
-                <p class="text-xs uppercase tracking-wide text-slate-500">Diretoria cadastrada</p>
-                <h2 class="text-lg font-semibold text-slate-900">Membros cadastrados: {{ $membersCount }}</h2>
-            </div>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th class="px-4 py-3 text-left">Nome</th>
-                        <th class="px-4 py-3 text-left">CPF</th>
-                        <th class="px-4 py-3 text-left">Email</th>
-                        <th class="px-4 py-3 text-left">Telefone</th>
-                        <th class="px-4 py-3 text-left">Cargo</th>
-                        <th class="px-4 py-3 text-left">Acoes</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($members as $member)
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-4 py-3 font-medium text-slate-800">{{ $member->name }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $member->cpf }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $member->email }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $member->phone }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $member->role }}</td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-2">
-                                    <a class="btn-secondary-sm" href="{{ route('members.edit', array_merge(['member' => $member], $redirectParams)) }}">Editar</a>
-                                    <form method="POST" action="{{ route('members.destroy', $member) }}" onsubmit="return confirm('Tem certeza que deseja remover este membro?');" class="inline-flex">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="redirect_to" value="{{ $redirectParams['redirect_to'] }}">
-                                        <input type="hidden" name="process_id" value="{{ $redirectParams['process_id'] }}">
-                                        <button type="submit" class="btn-danger-sm">Remover</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500">Ainda nao ha membros cadastrados.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 @endsection
 
@@ -111,3 +167,62 @@
 
 
 
+
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var digitsOnly = function (value, max) {
+            return value.replace(/\D/g, '').slice(0, max);
+        };
+
+        var formatCpf = function (value) {
+            var digits = digitsOnly(value, 11);
+            if (digits.length <= 3) return digits;
+            if (digits.length <= 6) return digits.slice(0, 3) + '.' + digits.slice(3);
+            if (digits.length <= 9) return digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6);
+            return digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6, 9) + '-' + digits.slice(9);
+        };
+
+        var formatPhone = function (value) {
+            var digits = digitsOnly(value, 11);
+            if (digits.length === 0) return '';
+            if (digits.length <= 2) return digits;
+            if (digits.length <= 6) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2);
+            if (digits.length <= 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
+            return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+        };
+
+        var formatCep = function (value) {
+            var digits = digitsOnly(value, 8);
+            if (digits.length <= 5) return digits;
+            return digits.slice(0, 5) + '-' + digits.slice(5);
+        };
+
+        var formatters = {
+            cpf: formatCpf,
+            phone: formatPhone,
+            cep: formatCep
+        };
+
+        var applyMask = function (input) {
+            var formatter = formatters[input.dataset.mask];
+            if (!formatter) return;
+
+            var formatted = formatter(input.value || '');
+            input.value = formatted;
+
+            if (document.activeElement === input) {
+                var pos = formatted.length;
+                input.setSelectionRange(pos, pos);
+            }
+        };
+
+        document.querySelectorAll('[data-mask]').forEach(function (input) {
+            applyMask(input);
+            input.addEventListener('input', function () { applyMask(input); });
+            input.addEventListener('blur', function () { applyMask(input); });
+        });
+    });
+</script>
+@endpush

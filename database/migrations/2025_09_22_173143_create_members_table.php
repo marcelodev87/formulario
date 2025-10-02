@@ -38,8 +38,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->unique(['institution_id', 'email']);
-            // CPF pode se repetir, não aplicar unique
+            // CPF pode se repetir, nao aplicar unique
         });
     }
 
