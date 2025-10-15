@@ -68,7 +68,7 @@ class AuthController extends Controller
             ->first();
 
         if (!$loginToken) {
-            return redirect()->route('auth.error')->with('error', 'Link inválido ou expirado. Solicite um novo acesso.');
+            return redirect()->route('auth.error')->with('error', 'Link invalido ou expirado. Solicite um novo acesso.');
         }
 
         $user = User::firstOrCreate(['email' => $data['email']]);
@@ -78,11 +78,7 @@ class AuthController extends Controller
         Auth::login($user, true);
         $request->session()->regenerate();
 
-        if ($user->institution) {
-            return redirect()->route('dashboard')->with('status', 'Bem-vindo de volta!');
-        }
-
-        return redirect()->route('setup.create');
+        return redirect()->route('dashboard')->with('status', 'Bem-vindo!');
     }
 
     public function logout(Request $request): RedirectResponse

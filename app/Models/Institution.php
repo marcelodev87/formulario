@@ -18,13 +18,6 @@ class Institution extends Model
         'document',
         'email',
         'phone',
-        'street',
-        'number',
-        'complement',
-        'district',
-        'city',
-        'uf',
-        'cep',
         'owner_user_id',
     ];
 
@@ -76,22 +69,9 @@ class Institution extends Model
 
     public function ensureHeadquartersLocation(): Location
     {
-        $location = $this->headquartersLocation()->first();
-
-        if ($location) {
-            return $location;
-        }
-
-        return $this->headquartersLocation()->create([
+        return $this->headquartersLocation()->firstOrCreate([], [
             'type' => 'headquarters',
             'name' => $this->name,
-            'street' => $this->street,
-            'number' => $this->number,
-            'complement' => $this->complement,
-            'district' => $this->district,
-            'city' => $this->city,
-            'uf' => $this->uf,
-            'cep' => $this->cep,
         ]);
     }
 

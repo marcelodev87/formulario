@@ -45,6 +45,10 @@
             </div>
         @endif
 
+        @if(isset($institutionProcessLocked) && $institutionProcessLocked)
+            <div class="alert alert-info">Processo aprovado: alteracoes bloqueadas. Solicite reabertura a equipe caso necessario.</div>
+        @endif
+
         @yield('content')
     </div>
 </main>

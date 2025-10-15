@@ -1,22 +1,18 @@
-@extends('layouts.app')
+
+@extends('internal.layouts.app')
+
+@section('title', 'Endereco da instituicao | Processo #' . $process->id)
 
 @section('content')
-@php
-    $redirectParams = $redirectParams ?? [];
-    $returnUrl = $returnUrl ?? route('dashboard');
-@endphp
 <div class="card space-y-8">
     <div class="space-y-2">
-        <h1 class="text-2xl font-semibold text-slate-900">Editar endereco da instituicao</h1>
-        <p class="text-sm text-slate-600">Atualize as informacoes de localizacao utilizadas em documentos e formularios oficiais.</p>
+        <h1 class="text-2xl font-semibold text-slate-900">Editar endereco</h1>
+        <p class="text-sm text-slate-600">Atualize o endereco oficial utilizado nos documentos do processo.</p>
     </div>
 
-    <form method="POST" action="{{ route('institution.address.update') }}" class="space-y-6">
+    <form method="POST" action="{{ route('etika.processes.address.update', $process) }}" class="space-y-6">
         @csrf
         @method('PUT')
-        @foreach($redirectParams as $paramKey => $paramValue)
-            <input type="hidden" name="{{ $paramKey }}" value="{{ $paramValue }}">
-        @endforeach
 
         <section class="space-y-4">
             <h2 class="text-lg font-semibold">Endereco</h2>
@@ -53,7 +49,7 @@
         </section>
 
         <div class="flex flex-wrap justify-end gap-3">
-            <a href="{{ $returnUrl }}" class="btn-secondary">Voltar a Pagina Inicial</a>
+            <a href="{{ $returnUrl }}" class="btn-secondary">Cancelar</a>
             <button type="submit" class="btn">Salvar endereco</button>
         </div>
     </form>

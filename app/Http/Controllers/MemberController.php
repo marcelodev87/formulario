@@ -24,6 +24,50 @@ class MemberController extends Controller
         return $this->redirectAfterAction($request, $request->user()->institution);
     }
 
+    public function create(Request $request): View
+    {
+        $user = $request->user();
+        $institution = $user->institution;
+
+        abort_unless($institution && $institution->owner_user_id === $user->id, 403);
+
+        return view('members.create', [
+            'institution' => $institution,
+        ]);
+    }
+
+    public function store(MemberRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $institution = $user->institution;
+
+        abort_unless($institution && $institution->owner_user_id === $user->id, 403);
+
+        $data = $request->validated();
+        $data['uf'] = strtoupper($data['uf']);
+        $data['institution_id'] = $institution->id;
+
+        $process = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
+
+        if ($process) {
+            $data['process_id'] = $process->id;
+        }
+
+        $member = Member::create($data);
+
+        $this->activityLogger->log(
+            actor: $user,
+            institution: $institution,
+            entityType: Member::class,
+            entityId: $member->id,
+            action: 'created',
+            before: [],
+            after: $member->toArray()
+        );
+
+        return $this->redirectAfterAction($request, $institution, 'Membro cadastrado com sucesso.');
+    }
+
     public function storeForBoardElection(MemberRequest $request, Process $process): RedirectResponse
     {
         $this->authorize('view', $process);

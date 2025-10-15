@@ -14,6 +14,14 @@
         : false;
     $property = optional($location)->property;
     $hasProperty = $property !== null;
+    $processRedirectParams = isset($process) ? [
+        'redirect_to' => $process->type,
+        'process_id' => $process->id,
+    ] : [];
+    $internalMemberUrl = $internalMemberUrl ?? route('invite.members.internal', $processRedirectParams);
+    $memberActionUrl = $isOwner
+        ? ($internalMemberUrl ?? '#members-section')
+        : null;
     $statusItems = [
         [
             'key' => 'members',
@@ -24,7 +32,7 @@
                 ? 'Requisitos minimos atendidos.'
                 : 'Cadastre pelo menos um membro alem do presidente.',
             'complete' => $hasMinimumMembers,
-            'action' => $isOwner ? '#members-section' : null,
+            'action' => $memberActionUrl,
             'action_label' => $hasMinimumMembers ? 'Ver membros' : 'Cadastrar membros',
             'action_class' => $hasMinimumMembers ? 'btn-secondary px-4 py-2 text-sm' : 'btn px-4 py-2 text-sm',
         ],
@@ -46,7 +54,7 @@
             'meta' => $hasProperty ? 'Informa????es Cadastradas.' : 'Dados do imovel pendentes.',
             'description' => 'Esses dados sao usados em contratos, licencas e laudos.',
             'complete' => $hasProperty,
-            'action' => $isOwner ? route('institution.property.edit') : null,
+            'action' => $isOwner ? route('institution.property.edit', $process) : null,
             'action_label' => $hasProperty ? 'Revisar imovel' : 'Cadastrar imovel',
             'action_class' => $hasProperty ? 'btn-secondary px-4 py-2 text-sm' : 'btn px-4 py-2 text-sm',
         ],
@@ -276,6 +284,11 @@
     });
 </script>
 @endpush
+
+
+
+
+
 
 
 

@@ -58,10 +58,34 @@ class BranchLeaderInviteController extends Controller
             'uf' => 'required|string|max:2',
             'cep' => 'required|string|max:9',
         ]);
-        $process = $invite->process;
+        $process = $invite->process()->with('institution')->first();
+
+        if (!$process) {
+            abort(404, 'Processo associado ao convite nao foi encontrado.');
+        }
+
         $location = $process->location()->first();
+
+        if (!$location) {
+            $location = $process->location()->create([
+                'institution_id' => $process->institution_id,
+                'type' => $process->type === Process::TYPE_BRANCH_OPENING ? 'branch' : 'headquarters',
+                'name' => $process->title,
+            ]);
+        }
+
+        if (!$location) {
+            return redirect()
+                ->route('branch_leader_invite.form', $invite)
+                ->withInput()
+                ->withErrors(['invite' => 'Nao foi possivel preparar o cadastro da filial. Solicite um novo convite ao responsavel.']);
+        }
+
+        $data['uf'] = strtoupper($data['uf']);
+
         $location->leader()->updateOrCreate([], $data);
         $invite->update(['status' => 'used']);
+
         return redirect()->route('invite.confirmation', ['invite' => $invite->key]);
     }
     public function generate(Request $request, Process $process): RedirectResponse

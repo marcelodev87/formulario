@@ -45,14 +45,27 @@ class OpeningProcessController extends Controller
 
         $hasMinimumMembers = $institution->members->count() >= 1;
 
+        $internalMemberUrl = route('invite.members.internal', [
+            'redirect_to' => $process->type,
+            'process_id' => $process->id,
+        ]);
+
         return view('dashboard.index', [
             'institution' => $institution,
             'members' => $institution->members,
             'inviteUrl' => $inviteUrl,
+            'inviteKey' => $activeInvite->key,
             'recentActivity' => $recentActivity,
             'hasMinimumMembers' => $hasMinimumMembers,
             'process' => $process,
             'headquartersLocation' => $institution->headquartersLocation,
+            'internalMemberUrl' => $internalMemberUrl,
         ]);
     }
 }
+
+
+
+
+
+

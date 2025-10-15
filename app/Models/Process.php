@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Models\ProcessStatusTimeline;
 
 class Process extends Model
 {
@@ -20,6 +21,7 @@ class Process extends Model
     public const STATUS_DRAFT = 'draft';
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_COMPLETED = 'completed';
+    public const STATUS_PENDING_UPDATES = 'pending_updates';
 
     /** @var array<int, string> */
     protected $fillable = [
@@ -54,6 +56,10 @@ class Process extends Model
         return $this->hasMany(Member::class);
     }
 
+    public function statusTimeline(): HasMany
+    {
+        return $this->hasMany(ProcessStatusTimeline::class)->orderByDesc('created_at');
+    }
 
     public function type(): BelongsTo
     {
@@ -91,9 +97,10 @@ class Process extends Model
     public static function statusLabels(): array
     {
         return [
-            self::STATUS_DRAFT => 'Rascunho',
-            self::STATUS_IN_PROGRESS => 'Em andamento',
-            self::STATUS_COMPLETED => 'Concluido',
+            self::STATUS_DRAFT => 'Novo',
+            self::STATUS_IN_PROGRESS => 'Em revisao',
+            self::STATUS_COMPLETED => 'Aprovado',
+            self::STATUS_PENDING_UPDATES => 'Aguardando novas informacoes',
         ];
     }
 

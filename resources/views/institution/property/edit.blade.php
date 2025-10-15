@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $redirectParams = $redirectParams ?? [];
+    $returnUrl = $returnUrl ?? route('dashboard');
+@endphp
 <div class="card space-y-8">
     <div class="space-y-2">
         <h1 class="text-2xl font-semibold text-slate-900">Dados do imovel</h1>
@@ -10,6 +14,9 @@
     <form method="POST" action="{{ route('institution.property.update') }}" class="space-y-6">
         @csrf
         @method('PUT')
+        @foreach($redirectParams as $paramKey => $paramValue)
+            <input type="hidden" name="{{ $paramKey }}" value="{{ $paramValue }}">
+        @endforeach
 
         <section class="space-y-4">
             <h2 class="text-lg font-semibold">Identificacao</h2>
@@ -73,11 +80,9 @@
         </section>
 
         <div class="flex flex-wrap justify-end gap-3">
-            <a href="{{ route('dashboard') }}" class="btn-secondary">Voltar a Pagina Inicial</a>
+            <a href="{{ $returnUrl }}" class="btn-secondary">Voltar a Pagina Inicial</a>
             <button type="submit" class="btn">Salvar dados do imovel</button>
         </div>
     </form>
 </div>
 @endsection
-
-

@@ -66,23 +66,4 @@ class Location extends Model
     {
         return $this->type === 'branch';
     }
-
-    public function syncInstitutionAddressIfHeadquarters(): void
-    {
-        if (!$this->relationLoaded('institution')) {
-            $this->load('institution');
-        }
-
-        if ($this->institution && $this->isHeadquarters()) {
-            $this->institution->forceFill([
-                'street' => $this->street,
-                'number' => $this->number,
-                'complement' => $this->complement,
-                'district' => $this->district,
-                'city' => $this->city,
-                'uf' => $this->uf,
-                'cep' => $this->cep,
-            ])->save();
-        }
-    }
 }

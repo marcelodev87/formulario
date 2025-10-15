@@ -33,7 +33,7 @@
                             <span class="inline-block rounded-full bg-slate-300 text-slate-700 px-3 py-1 text-xs font-semibold">Pendente</span>
                         @endif
                     </div>
-                    <p class="text-sm text-slate-600">Envie o estatuto atualizado em PDF ou Word (opcional).</p>
+                    <p class="text-sm text-slate-600">Envie o estatuto atual em PDF ou Word (opcional).</p>
                 </div>
                 <div class="flex items-center gap-2 mt-6">
                     @if(isset($process->answers['estatuto_file']))

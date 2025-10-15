@@ -4,26 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Process;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\View;
+use Illuminate\View\View as ViewResponse;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): ViewResponse
     {
         $user = $request->user();
-        $institution = $user->institution()->with('processes')->firstOrFail();
+        $institution = $user?->institution()->with('processes')->first();
 
-        $this->authorize('view', $institution);
+        if (!$institution) {
+            View::share('currentInstitution', null);
 
-        $openingProcess = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
-
-        if (!$openingProcess) {
-            $openingProcess = $institution->processes()->create([
-                'type' => Process::TYPE_INSTITUTION_OPENING,
-                'title' => Process::defaultTitleForType(Process::TYPE_INSTITUTION_OPENING),
-                'status' => Process::STATUS_IN_PROGRESS,
+            return view('dashboard.empty', [
+                'currentInstitution' => null,
             ]);
         }
+
+        $this->authorize('view', $institution);
+        View::share('currentInstitution', $institution);
 
         $processes = $institution->processes()->latest()->get();
         $typeDefinitions = Process::typeDefinitions();
@@ -32,7 +32,6 @@ class DashboardController extends Controller
             'institution' => $institution,
             'processes' => $processes,
             'typeDefinitions' => $typeDefinitions,
-            'openingProcess' => $openingProcess,
         ]);
     }
 }
