@@ -5,12 +5,14 @@
 @section('content')
 @php
     use App\Models\Process;
+    use Illuminate\Support\Str;
     $typeDefinition = Process::typeDefinitions()[$process->type] ?? null;
     $statusLabels = Process::statusLabels();
     $canApprove = $process->status !== Process::STATUS_COMPLETED;
     $canReopen = $process->status === Process::STATUS_COMPLETED;
     $processLocked = $processLocked ?? false;
     $isBranchProcess = $process->type === Process::TYPE_BRANCH_OPENING;
+    $isBylawsProcess = $process->type === 'bylaws_revision';
 
     if ($isBranchProcess) {
         $branchStatusItems = $branchStatusItems ?? [];
@@ -20,11 +22,21 @@
         $branchAddressComplete = $branchAddressComplete ?? false;
         $branchPropertyComplete = $branchPropertyComplete ?? false;
         $branchLeaderComplete = $branchLeaderComplete ?? false;
+        $branchStatusIconDefault = '<svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10 3 3 7-7" /></svg>';
+        $branchStatusIcons = [
+            'location' => '<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a5 5 0 0 0-5 5c0 3.866 5 11 5 11s5-7.134 5-11a5 5 0 0 0-5-5Zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z" /></svg>',
+            'property' => '<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M4 3a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v15h-3v-3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v3H4V3Zm5 2H7v2h2V5Zm2 0v2h2V5h-2ZM7 9v2h2V9H7Zm4 0v2h2V9h-2ZM7 13 v2h2 v-2H7Z" /></svg>',
+            'leader' => '<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm-6 11a6 6 0 0 1 12 0v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1Z" /></svg>',
+        ];
     } else {
         $addressComplete = $headquartersLocation && collect(['street', 'number', 'district', 'city', 'uf', 'cep'])->every(fn ($field) => filled($headquartersLocation->{$field}));
         $propertyComplete = $property !== null;
         $administrationComplete = $administration !== null;
     }
+    $bylawsEstatutoFile = $process->answers['estatuto_file'] ?? null;
+    $bylawsEstatutoUrl = $bylawsEstatutoFile ? asset('storage/' . $bylawsEstatutoFile) : null;
+    $bylawsEstatutoIsPdf = $bylawsEstatutoFile ? Str::endsWith(strtolower($bylawsEstatutoFile), '.pdf') : false;
+
 @endphp
 <div class="space-y-8">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -91,6 +103,63 @@
         </div>
     </div>
 
+    @if($isBylawsProcess)
+        <div class="card space-y-4">
+            <h2 class="text-xl font-semibold text-slate-900">Reforma de estatuto</h2>
+            <div class="grid gap-4 md:grid-cols-2">
+                <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-semibold text-slate-900">Novo endereco</p>
+                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ $addressComplete ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }}">
+                            {{ $addressComplete ? 'Concluido' : 'Pendente' }}
+                        </span>
+                    </div>
+                    <div class="mt-3 space-y-1">
+                        @if($headquartersLocation)
+                            <p>{{ optional($headquartersLocation)->street ?? '-' }}, {{ optional($headquartersLocation)->number ?? '-' }} {{ optional($headquartersLocation)->complement ? '- ' . optional($headquartersLocation)->complement : '' }}</p>
+                            <p>{{ optional($headquartersLocation)->district ?? '-' }} - {{ optional($headquartersLocation)->city ?? '-' }}/{{ optional($headquartersLocation)->uf ?? '-' }}</p>
+                            <p>CEP {{ optional($headquartersLocation)->cep ?? '-' }}</p>
+                        @else
+                            <p>Nenhum endereco informado.</p>
+                        @endif
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        @unless($processLocked)
+                            <a href="{{ route('etika.processes.address.edit', $process) }}" class="btn-secondary-sm">Editar endereco</a>
+                        @else
+                            <span class="text-xs text-slate-400">acoes indisponiveis</span>
+                        @endunless
+                    </div>
+                </div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-semibold text-slate-900">Copia do estatuto</p>
+                        @if($bylawsEstatutoFile)
+                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Enviado</span>
+                        @else
+                            <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">Pendente</span>
+                        @endif
+                    </div>
+                    <div class="mt-3 space-y-2">
+                        @if($bylawsEstatutoFile)
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{{ $bylawsEstatutoUrl }}" target="_blank" class="btn-secondary-sm">{{ $bylawsEstatutoIsPdf ? 'Visualizar PDF' : 'Baixar arquivo' }}</a>
+                                <form method="POST" action="{{ route('processes.bylaws_revision.delete_statute', $process) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-secondary-sm bg-red-100 text-red-700 hover:bg-red-200">Excluir</button>
+                                </form>
+                            </div>
+                        @else
+                            <p>Envie o estatuto atualizado em PDF ou Word para concluir o processo.</p>
+                            <a href="{{ route('processes.bylaws_revision.upload_statute', $process) }}" class="btn-secondary-sm">Enviar arquivo</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if($isBranchProcess)
     <div class="card space-y-3">
         <div class="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
@@ -116,27 +185,10 @@
                     <div class="space-y-2">
                         <div class="flex items-center gap-2 text-sm font-semibold text-slate-700">
                             <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                                @switch($item['key'])
-                                    @case('location')
-                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path d="M10 2a5 5 0 0 0-5 5c0 3.866 5 11 5 11s5-7.134 5-11a5 5 0 0 0-5-5Zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z" />
-                                        </svg>
-                                        @break
-                                    @case('property')
-                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path d="M4 3a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v15h-3v-3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v3H4V3Zm5 2H7v2h2V5Zm2 0v2h2V5h-2ZM7 9v2h2V9H7Zm4 0v2h2V9h-2ZM7 13v2h2v-2H7Z" />
-                                        </svg>
-                                        @break
-                                    @case('leader')
-                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path d="M10 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm-6 11a6 6 0 0 1 12 0v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1Z" />
-                                        </svg>
-                                        @break
-                                    @default
-                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m5 10 3 3 7-7" />
-                                        </svg>
-                                @endswitch
+                                @php
+                                    $iconSvg = $branchStatusIcons[$item['key']] ?? $branchStatusIconDefault;
+                                    echo $iconSvg;
+                                @endphp
                             </span>
                             <span>{{ $item['title'] }}</span>
                         </div>
@@ -178,7 +230,7 @@
                 <dd class="mt-1 text-sm text-slate-700">
                     @if($branchProperty)
                         <p><span class="font-semibold">Situacao:</span> {{ $branchProperty->tenure_type === 'own' ? 'Proprio' : ($branchProperty->tenure_type === 'rented' ? 'Alugado' : '-') }}</p>
-                        <p><span class="font-semibold">Area construida:</span> {{ $branchProperty->built_area_sqm ?? '-' }}{{ $branchProperty->built_area_sqm ? ' m²' : '' }}</p>
+                        <p><span class="font-semibold">Area construida:</span> {{ $branchProperty->built_area_sqm ?? '-' }}{{ $branchProperty->built_area_sqm ? ' m2' : '' }}</p>
                         <p><span class="font-semibold">Capacidade:</span> {{ $branchProperty->capacity ?? '-' }}</p>
                         <p><span class="font-semibold">Uso:</span> {{ $branchProperty->property_use ?? '-' }}</p>
                     @else
