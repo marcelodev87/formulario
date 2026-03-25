@@ -44,11 +44,11 @@
                     <input id="nationality" name="nationality" type="text" class="form-control" value="{{ old('nationality') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="father_name">Nome do pai</label>
+                    <label class="form-label" for="father_name">Nome do pai (Escreva "não consta" caso este campo esteja em branco no seu RG)</label>
                     <input id="father_name" name="father_name" type="text" class="form-control" value="{{ old('father_name') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="mother_name">Nome da mãe</label>
+                    <label class="form-label" for="mother_name">Nome da mãe (Escreva "não consta" caso este campo esteja em branco no seu RG)</label>
                     <input id="mother_name" name="mother_name" type="text" class="form-control" value="{{ old('mother_name') }}" required>
                 </div>
                 <div class="space-y-1">
@@ -60,7 +60,7 @@
                     <input id="rg" name="rg" type="text" class="form-control" value="{{ old('rg') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="rg_issuer">Órgão emissor</label>
+                    <label class="form-label" for="rg_issuer">{{ __('forms.labels.rg_issuer') }}</label>
                     <input id="rg_issuer" name="rg_issuer" type="text" class="form-control" value="{{ old('rg_issuer') }}" required>
                 </div>
                 <div class="space-y-1">

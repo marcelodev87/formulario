@@ -7,8 +7,8 @@
 @endphp
 <div class="card space-y-8">
     <div class="space-y-2">
-        <h1 class="text-2xl font-semibold text-slate-900">Dados administrativos</h1>
-        <p class="text-sm text-slate-600">Defina as regras administrativas da institui????o.</p>
+        <h1 class="text-2xl font-semibold text-slate-900">{{ __('forms.administration_title') }}</h1>
+        <p class="text-sm text-slate-600">{{ __('forms.administration_description') }}</p>
     </div>
 
     <form method="POST" action="{{ route('administration.store') }}" class="space-y-8">
@@ -16,52 +16,71 @@
         @foreach($redirectParams as $paramKey => $paramValue)
             <input type="hidden" name="{{ $paramKey }}" value="{{ $paramValue }}">
         @endforeach
+
         <section class="space-y-4">
-            <h2 class="text-lg font-semibold">Estrutura de governo</h2>
+            <p class="text-sm text-slate-600">Precisamos de 3 opções de nome, em ordem de preferência, para regularização.</p>
+            <div class="grid gap-4 md:grid-cols-1">
+                <div class="space-y-1">
+                    <label class="form-label" for="name_option_1">Primeira opção de nome</label>
+                    <input id="name_option_1" name="name_option_1" type="text" class="form-control" value="{{ old('name_option_1', $administration->name_option_1 ?? '') }}">
+                </div>
+                <div class="space-y-1">
+                    <label class="form-label" for="name_option_2">Segunda opção de nome</label>
+                    <input id="name_option_2" name="name_option_2" type="text" class="form-control" value="{{ old('name_option_2', $administration->name_option_2 ?? '') }}">
+                </div>
+                <div class="space-y-1">
+                    <label class="form-label" for="name_option_3">Terceira opção de nome</label>
+                    <input id="name_option_3" name="name_option_3" type="text" class="form-control" value="{{ old('name_option_3', $administration->name_option_3 ?? '') }}">
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <h2 class="text-lg font-semibold">{{ __('forms.government_structure') }}</h2>
             <div class="grid gap-4">
                 <div class="space-y-1">
-                    <span class="form-label">A organiza????o poder?? ser extinta</span>
+                    <span class="form-label">{{ __('forms.organizacao_extinta') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="dissolution_mode" value="president" {{ old('dissolution_mode', $administration->dissolution_mode ?? '') === 'president' ? 'checked' : '' }} required>
-                        Por decis??o do Presidente
+                        {{ __('forms.por_decisao_presidente') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="dissolution_mode" value="members" {{ old('dissolution_mode', $administration->dissolution_mode ?? '') === 'members' ? 'checked' : '' }}>
-                        Por decis??o dos Membros
+                        {{ __('forms.por_decisao_membros') }}
                     </label>
                 </div>
 
                 <div class="space-y-1">
-                    <span class="form-label">Regime de governo</span>
+                    <span class="form-label">{{ __('forms.regime_governo') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="governance_model" value="episcopal" {{ old('governance_model', $administration->governance_model ?? '') === 'episcopal' ? 'checked' : '' }} required>
-                        Episcopal: decis??es centralizadas no Pastor
+                        {{ __('forms.episcopal') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="governance_model" value="presbiterial" {{ old('governance_model', $administration->governance_model ?? '') === 'presbiterial' ? 'checked' : '' }}>
-                        Presbiterial: decis??es tomadas por um grupo de l??deres
+                        {{ __('forms.presbiterial') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="governance_model" value="congregacional" {{ old('governance_model', $administration->governance_model ?? '') === 'congregacional' ? 'checked' : '' }}>
-                        Congregacional: decis??es tomadas por todos os membros
+                        {{ __('forms.congregacional') }}
                     </label>
                 </div>
 
                 <div class="grid gap-3 md:grid-cols-2">
                     <div class="space-y-2">
-                        <span class="form-label">Tempo de mandato do Presidente</span>
+                        <span class="form-label">{{ __('forms.president_term') }}</span>
                         <label class="flex items-center gap-2 text-sm">
                             <input type="radio" name="president_term_type" value="indefinite" {{ old('president_term_type', ($administration->president_term_indefinite ?? false) ? 'indefinite' : 'years') === 'indefinite' ? 'checked' : '' }}>
-                            Indeterminado
+                            {{ __('forms.indeterminado') }}
                         </label>
                         <label class="flex items-center gap-2 text-sm">
                             <input type="radio" name="president_term_type" value="years" {{ old('president_term_type', ($administration->president_term_indefinite ?? false) ? 'indefinite' : 'years') === 'years' ? 'checked' : '' }}>
-                            Determinado
+                            {{ __('forms.determinado') }}
                         </label>
-                        <input type="number" name="president_term_years" class="form-control" min="1" max="50" placeholder="Anos" value="{{ old('president_term_years', $administration->president_term_years ?? '') }}">
+                        <input type="number" name="president_term_years" class="form-control" min="1" max="50" placeholder="{{ __('forms.years') }}" value="{{ old('president_term_years', $administration->president_term_years ?? '') }}">
                     </div>
                     <div class="space-y-2">
-                        <label class="form-label" for="board_term_years">Tempo de mandato dos membros da diretoria (anos)</label>
+                        <label class="form-label" for="board_term_years">{{ __('forms.board_term') }}</label>
                         <input id="board_term_years" name="board_term_years" type="number" min="1" max="50" class="form-control" value="{{ old('board_term_years', $administration->board_term_years ?? '') }}" required>
                     </div>
                 </div>
@@ -69,51 +88,51 @@
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-lg font-semibold">Decis??es ministeriais</h2>
+            <h2 class="text-lg font-semibold">{{ __('forms.ministerial_decisions') }}</h2>
             <div class="grid gap-4">
                 <div class="space-y-1">
-                    <span class="form-label">Ordena????es ao minist??rio</span>
+                    <span class="form-label">{{ __('forms.ordination_decision') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="ordination_decision" value="president" {{ old('ordination_decision', $administration->ordination_decision ?? '') === 'president' ? 'checked' : '' }} required>
-                        Por decis??o do Presidente
+                        {{ __('forms.por_decisao_presidente') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="ordination_decision" value="leadership" {{ old('ordination_decision', $administration->ordination_decision ?? '') === 'leadership' ? 'checked' : '' }}>
-                        Por decis??o da Lideran??a
+                        {{ __('forms.por_decisao_lideranca') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="ordination_decision" value="members" {{ old('ordination_decision', $administration->ordination_decision ?? '') === 'members' ? 'checked' : '' }}>
-                        Por decis??o dos Membros
+                        {{ __('forms.por_decisao_membros') }}
                     </label>
                 </div>
 
                 <div class="space-y-1">
-                    <span class="form-label">Movimenta????es financeiras e banc??rias ser??o feitas pelo</span>
+                    <span class="form-label">{{ __('forms.movement_financial') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="financial_responsible" value="president" {{ old('financial_responsible', $administration->financial_responsible ?? '') === 'president' ? 'checked' : '' }} required>
-                        Presidente
+                        {{ __('forms.president') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="financial_responsible" value="president_treasurer" {{ old('financial_responsible', $administration->financial_responsible ?? '') === 'president_treasurer' ? 'checked' : '' }}>
-                        Presidente e Tesoureiro em conjunto
+                        {{ __('forms.president_treasurer') }}
                     </label>
                 </div>
 
                 <div class="space-y-2">
-                    <span class="form-label">Cargos ministeriais que a organiza????o ter??</span>
+                    <span class="form-label">{{ __('forms.ministerial_roles_title') }}</span>
                     <div class="grid gap-2 md:grid-cols-3">
                         @php
                             $roles = collect(old('ministerial_roles', $administration->ministerial_roles ?? []))->map(fn($v) => strtolower($v))->toArray();
                             $options = [
-                                'apostolo' => 'Ap??stolo',
+                                'apostolo' => 'Apóstolo',
                                 'bispo' => 'Bispo',
-                                'diacono' => 'Di??cono',
+                                'diacono' => 'Diácono',
                                 'dirigente' => 'Dirigente',
                                 'evangelista' => 'Evangelista',
-                                'missionario' => 'Mission??rio',
+                                'missionario' => 'Missionário',
                                 'obreiro' => 'Obreiro',
                                 'pastor' => 'Pastor',
-                                'presbitero' => 'Presb??tero',
+                                'presbitero' => 'Presbítero',
                             ];
                         @endphp
                         @foreach($options as $value => $label)
@@ -126,26 +145,34 @@
                 </div>
 
                 <div class="space-y-1">
-                    <span class="form-label">Haver?? pagamento de prebenda pastoral?</span>
+                    <span class="form-label">{{ __('forms.payment_policy') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="stipend_policy" value="all_pastors" {{ old('stipend_policy', $administration->stipend_policy ?? '') === 'all_pastors' ? 'checked' : '' }} required>
-                        Sim, todos os Pastores receber??o pagamento
+                        {{ __('forms.yes_all') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="stipend_policy" value="only_president" {{ old('stipend_policy', $administration->stipend_policy ?? '') === 'only_president' ? 'checked' : '' }}>
-                        Sim, apenas o Pastor Presidente receber?? pagamento
+                        {{ __('forms.yes_president') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="stipend_policy" value="none" {{ old('stipend_policy', $administration->stipend_policy ?? '') === 'none' ? 'checked' : '' }}>
-                        N??o, todos os ministros trabalhar??o de maneira volunt??ria
+                        {{ __('forms.no') }}
                     </label>
                 </div>
             </div>
         </section>
 
+        <section class="space-y-4">
+            <h2 class="text-lg font-semibold">Informações adicionais</h2>
+            <div class="space-y-1">
+                <label class="form-label" for="additional_info">Fale sobre a sua organização, mencionando detalhes importantes sobre a administração, que não foram perguntados neste formulário:</label>
+                <textarea id="additional_info" name="additional_info" class="form-control" rows="5" placeholder="Descreva aqui...">{{ old('additional_info', $administration->additional_info ?? '') }}</textarea>
+            </div>
+        </section>
+
         <div class="flex flex-wrap justify-end gap-3">
-            <a href="{{ $returnUrl }}" class="btn-secondary">Voltar a Pagina Inicial</a>
-            <button type="submit" class="btn">Salvar dados</button>
+            <a href="{{ $returnUrl }}" class="btn-secondary">{{ __('forms.back_to_home') }}</a>
+            <button type="submit" class="btn">{{ __('forms.save_data') }}</button>
         </div>
     </form>
 </div>

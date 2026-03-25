@@ -16,8 +16,28 @@ class InstitutionAddressController extends Controller
 
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
-        $location = $institution->ensureHeadquartersLocation();
         $redirectParams = $this->sanitizeRedirectParams($request->query());
+        $process = null;
+        $location = null;
+
+        // Se houver process_id, carregar endereço do PROCESSO
+        if (isset($redirectParams['process_id'])) {
+            $process = Process::find($redirectParams['process_id']);
+            abort_unless($process && $process->institution_id === $institution->id, 403);
+            $location = $process->location;
+            // Se não houver localização no processo, criar vazia
+            if (!$location) {
+                $location = new \App\Models\Location([
+                    'process_id' => $process->id,
+                    'institution_id' => $institution->id,
+                    'type' => 'headquarters',
+                ]);
+            }
+        } else {
+            // Caso contrário, carregar endereço da INSTITUIÇÃO
+            $location = $institution->ensureHeadquartersLocation();
+        }
+
         $returnUrl = $this->resolveTargetRoute($institution, $redirectParams, 'dashboard');
 
         return view('institution.address.edit', [
@@ -35,8 +55,22 @@ class InstitutionAddressController extends Controller
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
         $data = $request->validated();
+        $redirectParams = $this->sanitizeRedirectParams($request->input());
 
-        $location = $institution->ensureHeadquartersLocation();
+        // Se houver process_id, salvar endereço do PROCESSO
+        if (isset($redirectParams['process_id'])) {
+            $process = Process::find($redirectParams['process_id']);
+            abort_unless($process && $process->institution_id === $institution->id, 403);
+            
+            $location = $process->location ??  new \App\Models\Location([
+                'process_id' => $process->id,
+                'institution_id' => $institution->id,
+                'type' => 'headquarters',
+            ]);
+        } else {
+            // Caso contrário, salvar endereço da INSTITUIÇÃO
+            $location = $institution->ensureHeadquartersLocation();
+        }
 
         $location->fill([
             'street' => $data['street'],
@@ -48,7 +82,6 @@ class InstitutionAddressController extends Controller
             'cep' => $data['cep'],
         ])->save();
 
-        $redirectParams = $this->sanitizeRedirectParams($request->input());
         $redirectUrl = $this->resolveTargetRoute($institution, $redirectParams, 'institution.address.edit', $redirectParams);
 
         return redirect($redirectUrl)->with('status', 'Endereco atualizado com sucesso.');

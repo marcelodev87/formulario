@@ -55,7 +55,7 @@
                     <input id="rg" name="rg" type="text" class="form-control" value="{{ old('rg') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="rg_issuer">Órgão emissor</label>
+                    <label class="form-label" for="rg_issuer">{{ __('forms.labels.rg_issuer') }}</label>
                     <input id="rg_issuer" name="rg_issuer" type="text" class="form-control" value="{{ old('rg_issuer') }}" required>
                 </div>
                 <div class="space-y-1">

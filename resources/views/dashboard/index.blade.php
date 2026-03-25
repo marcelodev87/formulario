@@ -3,11 +3,21 @@
 @section('content')
 @php
     $isOwner = auth()->user()->institution->owner_user_id === auth()->id();
-    $hasAdministration = $institution->relationLoaded('administration')
-        ? $institution->administration !== null
-        : $institution->administration()->exists();
+    // Quando estamos em um processo, não usar dados da instituição
+    $isInProcess = isset($process);
+    $hasAdministration = false;
+
+    if ($isInProcess) {
+        $hasAdministration = !empty($process->meta['administration']);
+    } else {
+        $hasAdministration = $institution->relationLoaded('administration')
+            ? $institution->administration !== null
+            : $institution->administration()->exists();
+    }
     $totalMembers = $members->count();
-    $location = $headquartersLocation ?? $institution->headquartersLocation;
+    // Quando há processo, usar $headquartersLocation (que vem do processo)
+    // Quando não há processo, usar headquartersLocation da instituição
+    $location = $isInProcess ? $headquartersLocation : ($institution->headquartersLocation ?? null);
     $addressComplete = $location
         ? collect(['street', 'number', 'district', 'city', 'uf', 'cep'])
             ->every(fn ($field) => filled($location->{$field}))
@@ -43,29 +53,29 @@
             'meta' => $addressComplete ? 'Endereco cadastrado.' : 'Endereco incompleto.',
             'description' => 'Manter o endereco correto agiliza emissoes de documentos.',
             'complete' => $addressComplete,
-            'action' => $isOwner ? route('institution.address.edit') : null,
+            'action' => $isOwner ? route('institution.address.edit', isset($process) ? ['redirect_to' => $process->type, 'process_id' => $process->id] : []) : null,
             'action_label' => $addressComplete ? 'Revisar endereco' : 'Cadastrar endereco',
             'action_class' => $addressComplete ? 'btn-secondary px-4 py-2 text-sm' : 'btn px-4 py-2 text-sm',
         ],
         [
             'key' => 'property',
             'icon' => 'building',
-            'title' => 'Dados do imovel',
-            'meta' => $hasProperty ? 'Informa????es Cadastradas.' : 'Dados do imovel pendentes.',
-            'description' => 'Esses dados sao usados em contratos, licencas e laudos.',
+            'title' => 'Dados do imóvel',
+            'meta' => $hasProperty ? __('forms.info_registered') : 'Dados do imóvel pendentes.',
+            'description' => 'Esses dados são usados em contratos, licenças e laudos.',
             'complete' => $hasProperty,
-            'action' => $isOwner ? route('institution.property.edit', $process) : null,
-            'action_label' => $hasProperty ? 'Revisar imovel' : 'Cadastrar imovel',
+            'action' => $isOwner ? route('institution.property.edit', isset($process) ? ['redirect_to' => $process->type, 'process_id' => $process->id] : []) : null,
+            'action_label' => $hasProperty ? 'Revisar imóvel' : 'Cadastrar imóvel',
             'action_class' => $hasProperty ? 'btn-secondary px-4 py-2 text-sm' : 'btn px-4 py-2 text-sm',
         ],
         [
             'key' => 'administration',
             'icon' => 'folder',
             'title' => 'Dados administrativos',
-            'meta' => $hasAdministration ? 'Informa????es definidas.' : 'Dados administrativos pendentes.',
+            'meta' => $hasAdministration ? __('forms.info_registered') : 'Dados administrativos pendentes.',
             'description' => 'Defina regras de governo e responsabilidades da diretoria.',
             'complete' => $hasAdministration,
-            'action' => $isOwner ? route('administration.edit') : null,
+            'action' => $isOwner ? route('administration.edit', isset($process) ? ['redirect_to' => $process->type, 'process_id' => $process->id] : []) : null,
             'action_label' => $hasAdministration ? 'Revisar dados' : 'Cadastrar dados',
             'action_class' => $hasAdministration ? 'btn-secondary px-4 py-2 text-sm' : 'btn px-4 py-2 text-sm',
         ],
@@ -190,7 +200,7 @@
                         <th class="px-4 py-3 text-left">Email</th>
                         <th class="px-4 py-3 text-left">Telefone</th>
                         <th class="px-4 py-3 text-left">Cargo</th>
-                        <th class="px-4 py-3 text-left">A????es</th>
+                        <th class="px-4 py-3 text-left">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">

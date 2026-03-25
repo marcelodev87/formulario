@@ -9,8 +9,8 @@
         'Vice Presidente' => 'Vice Presidente',
         'Tesoureiro' => 'Tesoureiro',
         'Segundo Tesoureiro' => 'Segundo Tesoureiro',
-        'Secretario' => 'Secretario',
-        'Segundo Secretario' => 'Segundo Secretario',
+        'SecretÃ¡rio' => 'SecretÃ¡rio',
+        'Segundo SecretÃ¡rio' => 'Segundo SecretÃ¡rio',
         'Conselho Fiscal' => 'Conselho Fiscal',
     ];
     $redirectParams = $redirectParams ?? [];
@@ -19,7 +19,7 @@
 <div class="card space-y-8">
     <div class="space-y-2">
         <h1 class="text-2xl font-semibold text-slate-900">Cadastrar membro da diretoria</h1>
-        <p class="text-sm text-slate-600">Preencha os dados abaixo para adicionar um membro à instituição {{ $institution->name }}.</p>
+        <p class="text-sm text-slate-600">Preencha os dados abaixo para adicionar um membro Ã  instituiÃ§Ã£o {{ $institution->name }}.</p>
     </div>
 
     <form method="POST" action="{{ route('invite.members.internal.store') }}" class="space-y-6">
@@ -55,7 +55,7 @@
                     <input id="father_name" name="father_name" type="text" class="form-control" value="{{ old('father_name') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="mother_name">Nome da mãe</label>
+                    <label class="form-label" for="mother_name">Nome da mÃ£e</label>
                     <input id="mother_name" name="mother_name" type="text" class="form-control" value="{{ old('mother_name') }}" required>
                 </div>
                 <div class="space-y-1">
@@ -67,7 +67,7 @@
                     <input id="rg" name="rg" type="text" class="form-control" value="{{ old('rg') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="rg_issuer">Órgão emissor</label>
+                    <label class="form-label" for="rg_issuer">Ã“rgÃ£o emissor</label>
                     <input id="rg_issuer" name="rg_issuer" type="text" class="form-control" value="{{ old('rg_issuer') }}" required>
                 </div>
                 <div class="space-y-1">
@@ -80,7 +80,7 @@
                     </select>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="gender">Gênero</label>
+                    <label class="form-label" for="gender">GÃªnero</label>
                     <select id="gender" name="gender" class="form-control" required>
                         <option value="">Selecione</option>
                         @foreach($genders as $gender)
@@ -98,7 +98,7 @@
                     </select>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="profession">Profissão</label>
+                    <label class="form-label" for="profession">ProfissÃ£o</label>
                     <input id="profession" name="profession" type="text" class="form-control" value="{{ old('profession') }}" required>
                 </div>
                 <div class="space-y-1">
@@ -113,14 +113,14 @@
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-lg font-semibold">Endereço</h2>
+            <h2 class="text-lg font-semibold">EndereÃ§o</h2>
             <div class="grid gap-4 md:grid-cols-2">
                 <div class="space-y-1 md:col-span-2">
                     <label class="form-label" for="street">Logradouro</label>
                     <input id="street" name="street" type="text" class="form-control" value="{{ old('street') }}" required>
                 </div>
                 <div class="space-y-1">
-                    <label class="form-label" for="number">Número</label>
+                    <label class="form-label" for="number">NÃºmero</label>
                     <input id="number" name="number" type="text" class="form-control" value="{{ old('number') }}" required>
                 </div>
                 <div class="space-y-1">

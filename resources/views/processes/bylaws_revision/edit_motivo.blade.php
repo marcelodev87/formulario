@@ -5,7 +5,7 @@
     <div class="card space-y-2">
         <p class="text-xs uppercase tracking-wide text-slate-500">Processo</p>
         <h1 class="text-2xl font-semibold text-slate-900">{{ $process->title }}</h1>
-        <p class="text-sm text-slate-600">Atualize as informacoes referentes a {{ strtolower($motivoLabel) }}.</p>
+        <p class="text-sm text-slate-600">{{ __('forms.update_info_ref') }} {{ strtolower($motivoLabel) }}.</p>
     </div>
 
     <div class="card space-y-6 max-w-3xl">

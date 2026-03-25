@@ -21,6 +21,10 @@ class InstitutionAdministration extends Model
         'financial_responsible',
         'ministerial_roles',
         'stipend_policy',
+        'additional_info',
+        'name_option_1',
+        'name_option_2',
+        'name_option_3',
     ];
 
     protected $casts = [

@@ -22,15 +22,6 @@ class ProcessController extends Controller
             'title' => ['nullable', 'string', 'max:255'],
         ]);
 
-        if ($validated['type'] === Process::TYPE_INSTITUTION_OPENING) {
-            $existing = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
-
-            if ($existing) {
-                return redirect()->route('processes.show', $existing)
-                    ->with('status', 'O processo de abertura ja esta em andamento.');
-            }
-        }
-
         $process = $institution->processes()->create([
             'type' => $validated['type'],
             'title' => $validated['title'] !== null

@@ -102,7 +102,7 @@
 
                 <div class="space-y-1">
 
-                    <label class="form-label" for="father_name">Nome do pai</label>
+                    <label class="form-label" for="father_name">Nome do pai (Escreva "nÃ£o consta" caso este campo esteja em branco no seu RG)</label>
 
                     <input id="father_name" name="father_name" type="text" class="form-control" value="{{ old('father_name', $member->father_name) }}" required>
 
@@ -110,7 +110,7 @@
 
                 <div class="space-y-1">
 
-                    <label class="form-label" for="mother_name">Nome da mae</label>
+                    <label class="form-label" for="mother_name">Nome da mÃ£e (Escreva "nÃ£o consta" caso este campo esteja em branco no seu RG)</label>
 
                     <input id="mother_name" name="mother_name" type="text" class="form-control" value="{{ old('mother_name', $member->mother_name) }}" required>
 
@@ -196,7 +196,7 @@
 
                         <option value="Solteiro(a)" {{ old('marital_status', $member->marital_status) === 'Solteiro(a)' ? 'selected' : '' }}>Solteiro(a)</option>
 
-                        <option value="Viúvo(a)" {{ old('marital_status', $member->marital_status) === 'Viúvo(a)' ? 'selected' : '' }}>Viúvo(a)</option>
+                        <option value="Viï¿½vo(a)" {{ old('marital_status', $member->marital_status) === 'Viï¿½vo(a)' ? 'selected' : '' }}>Viï¿½vo(a)</option>
 
                     </select>
 

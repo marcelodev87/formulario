@@ -17,13 +17,18 @@ class OpeningProcessController extends Controller
 
         $this->authorize('view', $process);
 
-        $institution = $process->institution()->with([
-            'members' => function ($query) {
-                $query->orderBy('name');
-            },
-            'administration',
-            'headquartersLocation.property',
-        ])->firstOrFail();
+        $institution = $process->institution;
+
+        // Carrega membros do PROCESSO, não da instituição
+        $members = $process->members()->orderBy('name')->get();
+
+        // Carrega localização do PROCESSO (se existir)
+        $location = $process->location;
+
+        // Se não houver localização do processo, trata como vazia
+        if (!$location) {
+            $location = null;
+        }
 
         $activeInvite = $institution->invites()->active()->latest()->first();
 
@@ -43,7 +48,7 @@ class OpeningProcessController extends Controller
             ->take(10)
             ->get();
 
-        $hasMinimumMembers = $institution->members->count() >= 1;
+        $hasMinimumMembers = $members->count() >= 1;
 
         $internalMemberUrl = route('invite.members.internal', [
             'redirect_to' => $process->type,
@@ -52,13 +57,13 @@ class OpeningProcessController extends Controller
 
         return view('dashboard.index', [
             'institution' => $institution,
-            'members' => $institution->members,
+            'members' => $members,
             'inviteUrl' => $inviteUrl,
             'inviteKey' => $activeInvite->key,
             'recentActivity' => $recentActivity,
             'hasMinimumMembers' => $hasMinimumMembers,
             'process' => $process,
-            'headquartersLocation' => $institution->headquartersLocation,
+            'headquartersLocation' => $location,
             'internalMemberUrl' => $internalMemberUrl,
         ]);
     }

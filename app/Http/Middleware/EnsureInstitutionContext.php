@@ -34,8 +34,8 @@ class EnsureInstitutionContext
         $request->attributes->set('institution', $institution);
         View::share('currentInstitution', $institution);
 
-        $process = Process::forInstitutionAndType($institution, Process::TYPE_INSTITUTION_OPENING);
-        $isLocked = $process && $process->status === Process::STATUS_COMPLETED;
+        $process = null;
+        $isLocked = false;
 
         $currentProcessParam = $request->route('process');
         if ($currentProcessParam instanceof Process) {

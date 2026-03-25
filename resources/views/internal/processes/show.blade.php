@@ -52,12 +52,12 @@
     </div>
 
     @if($processLocked)
-        <div class="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-700">Processo aprovado: reabra o processo para realizar alteracoes internas ou pelos responsaveis da instituicao.</div>
+        <div class="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-700">{{ __('forms.process_approved') }}</div>
     @endif
 
 <div class="grid gap-6 md:grid-cols-2">
         <div class="card space-y-4">
-            <h2 class="text-xl font-semibold text-slate-900">Instituicao</h2>
+            <h2 class="text-xl font-semibold text-slate-900">{{ __('forms.institution') }}</h2>
             <dl class="grid grid-cols-1 gap-3 text-sm">
                 <div>
                     <dt class="text-slate-500">Nome</dt>
@@ -79,15 +79,15 @@
         </div>
 
         <div class="card space-y-4">
-            <h2 class="text-xl font-semibold text-slate-900">Acoes</h2>
-            <p class="text-sm text-slate-600">Gerencie o ciclo de vida do processo e registre observacoes internas.</p>
+            <h2 class="text-xl font-semibold text-slate-900">{{ __('forms.actions') }}</h2>
+            <p class="text-sm text-slate-600">{{ __('forms.manage_process_lifecycle') }}</p>
             <div class="space-y-4">
                 @if($canApprove)
                     <form method="POST" action="{{ route('etika.processes.approve', $process) }}" class="space-y-2">
                         @csrf
                         <label class="form-label" for="approve-note">Observacao (opcional)</label>
                         <textarea id="approve-note" name="note" rows="3" class="form-control" placeholder="Resumo da aprovacao"></textarea>
-                        <button type="submit" class="btn w-full">Aprovar informacoes</button>
+                        <button type="submit" class="btn w-full">{{ __('forms.approve_info') }}</button>
                     </form>
                 @endif
 
@@ -258,11 +258,11 @@
             <div class="card space-y-3">
                 <div class="flex items-start justify-between gap-3">
                     <div>
-                        <h2 class="text-xl font-semibold text-slate-900">Endereco institucional</h2>
-                        <p class="text-sm text-slate-600">{{ $addressComplete ? 'Dados completos.' : 'Endereco ainda incompleto.' }}</p>
+                        <h2 class="text-xl font-semibold text-slate-900">{{ __('forms.institution_address') }}</h2>
+                        <p class="text-sm text-slate-600">{{ $addressComplete ? __('forms.address_registered') : __('forms.address_incomplete') }}</p>
                     </div>
                     @unless($processLocked)
-                        <a href="{{ route('etika.processes.address.edit', $process) }}" class="btn-secondary-sm">Editar</a>
+                        <a href="{{ route('etika.processes.address.edit', $process) }}" class="btn-secondary-sm">{{ __('forms.edit') }}</a>
                     @endunless
                 </div>
                 <div class="text-sm text-slate-600">
@@ -272,7 +272,7 @@
                         <p>{{ $headquartersLocation->city ?? '-' }} / {{ $headquartersLocation->uf ?? '-' }}</p>
                         <p>CEP {{ $headquartersLocation->cep ?? '-' }}</p>
                     @else
-                        <p>Endereco nao informado.</p>
+                        <p>{{ __('forms.address_incomplete') }}</p>
                     @endif
                 </div>
             </div>
@@ -280,19 +280,19 @@
             <div class="card space-y-3">
                 <div class="flex items-start justify-between gap-3">
                     <div>
-                        <h2 class="text-xl font-semibold text-slate-900">Dados do imovel</h2>
-                        <p class="text-sm text-slate-600">{{ $propertyComplete ? 'Informacoes registradas.' : 'Imovel nao cadastrado.' }}</p>
+                        <h2 class="text-xl font-semibold text-slate-900">{{ __('forms.institution_property') }}</h2>
+                        <p class="text-sm text-slate-600">{{ $propertyComplete ? __('forms.info_registered') : __('forms.property_not_registered') }}</p>
                     </div>
                     @unless($processLocked)
-                        <a href="{{ route('etika.processes.property.edit', $process) }}" class="btn-secondary-sm">Editar</a>
+                        <a href="{{ route('etika.processes.property.edit', $process) }}" class="btn-secondary-sm">{{ __('forms.edit') }}</a>
                     @endunless
                 </div>
                 <div class="text-sm text-slate-600">
                     @if($propertyComplete)
                         <p><span class="font-semibold">IPTU:</span> {{ $property->iptu_registration ?? '-' }}</p>
                         <p><span class="font-semibold">Tipo:</span> {{ $property->property_use ?? '-' }}</p>
-                        <p><span class="font-semibold">Situacao:</span> {{ $property->tenure_type === 'own' ? 'Proprio' : ($property->tenure_type === 'rented' ? 'Alugado' : '-') }}</p>
-                        <p><span class="font-semibold">Area construida:</span> {{ $property->built_area_sqm ? $property->built_area_sqm . ' m2' : '-' }}</p>
+                        <p><span class="font-semibold">Situação:</span> {{ $property->tenure_type === 'own' ? 'Próprio' : ($property->tenure_type === 'rented' ? 'Alugado' : '-') }}</p>
+                        <p><span class="font-semibold">Área construída:</span> {{ $property->built_area_sqm ? $property->built_area_sqm . ' m²' : '-' }}</p>
                         <p><span class="font-semibold">Capacidade:</span> {{ $property->capacity ?? '-' }}</p>
                     @else
                         <p>Nenhuma informacao cadastrada.</p>
@@ -303,23 +303,23 @@
             <div class="card space-y-3 md:col-span-2">
                 <div class="flex items-start justify-between gap-3">
                     <div>
-                        <h2 class="text-xl font-semibold text-slate-900">Administracao</h2>
-                        <p class="text-sm text-slate-600">{{ $administrationComplete ? 'Configuracoes cadastradas.' : 'Defina as regras administrativas.' }}</p>
+                        <h2 class="text-xl font-semibold text-slate-900">{{ __('forms.administration') }}</h2>
+                        <p class="text-sm text-slate-600">{{ $administrationComplete ? __('forms.administration_registered') : __('forms.administration_define_rules') }}</p>
                     </div>
                     @unless($processLocked)
-                        <a href="{{ route('etika.processes.administration.edit', $process) }}" class="btn-secondary-sm">Editar</a>
+                        <a href="{{ route('etika.processes.administration.edit', $process) }}" class="btn-secondary-sm">{{ __('forms.edit') }}</a>
                     @endunless
                 </div>
                 <div class="grid gap-2 text-sm text-slate-600 md:grid-cols-2">
                     @if($administrationComplete)
                         <p><span class="font-semibold">Modelo:</span> {{ $administration->governance_model ?? '-' }}</p>
-                        <p><span class="font-semibold">Extincao:</span> {{ $administration->dissolution_mode ?? '-' }}</p>
-                        <p><span class="font-semibold">Mandato presidente:</span> {{ ($administration->president_term_indefinite ?? false) ? 'Indeterminado' : (($administration->president_term_years ?? '-') . ' anos') }}</p>
-                        <p><span class="font-semibold">Mandato diretoria:</span> {{ $administration->board_term_years ?? '-' }} anos</p>
+                        <p><span class="font-semibold">Extinção:</span> {{ $administration->dissolution_mode ?? '-' }}</p>
+                        <p><span class="font-semibold">Mandato do presidente:</span> {{ ($administration->president_term_indefinite ?? false) ? 'Indeterminado' : (($administration->president_term_years ?? '-') . ' anos') }}</p>
+                        <p><span class="font-semibold">Mandato da diretoria:</span> {{ $administration->board_term_years ?? '-' }} anos</p>
                         <p class="md:col-span-2"><span class="font-semibold">Cargos:</span> {{ $administration->ministerial_roles ? implode(', ', $administration->ministerial_roles) : '-' }}</p>
                         <p class="md:col-span-2"><span class="font-semibold">Prebenda:</span> {{ $administration->stipend_policy ?? '-' }}</p>
                     @else
-                        <p>Nenhuma informacao administrativa cadastrada.</p>
+                        <p>Nenhuma informação administrativa cadastrada.</p>
                     @endif
                 </div>
             </div>
@@ -327,8 +327,8 @@
             <div class="card space-y-4 md:col-span-2" id="members-section">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h2 class="text-xl font-semibold text-slate-900">Membros da diretoria</h2>
-                        <p class="text-sm text-slate-600">{{ $hasMinimumMembers ? 'Requisitos minimos atendidos.' : 'Cadastre pelo menos um membro alem do presidente.' }}</p>
+                        <h2 class="text-xl font-semibold text-slate-900">{{ __('forms.board_members') }}</h2>
+                        <p class="text-sm text-slate-600">{{ $hasMinimumMembers ? __('forms.minimum_members_met') : __('forms.minimum_members_required') }}</p>
                     </div>
                     @unless($processLocked)
                         <a href="{{ route('etika.processes.members.create', $process) }}" class="btn">Adicionar membro</a>
@@ -343,7 +343,7 @@
                                 <th class="px-4 py-3 text-left">Email</th>
                                 <th class="px-4 py-3 text-left">Telefone</th>
                                 <th class="px-4 py-3 text-left">Cargo</th>
-                                <th class="px-4 py-3 text-left">Acoes</th>
+                                <th class="px-4 py-3 text-left">{{ __('forms.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -357,7 +357,7 @@
                                     <td class="px-4 py-3">
                                         @if(!$processLocked)
                                             <div class="flex items-center gap-2">
-                                                <a href="{{ route('etika.processes.members.edit', [$process, $member]) }}" class="btn-secondary-sm">Editar</a>
+                                                <a href="{{ route('etika.processes.members.edit', [$process, $member]) }}" class="btn-secondary-sm">{{ __('forms.edit') }}</a>
                                                 <form method="POST" action="{{ route('etika.processes.members.destroy', [$process, $member]) }}" onsubmit="return confirm('Confirma remover este membro?');">
                                                     @csrf
                                                     @method('DELETE')

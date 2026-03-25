@@ -22,6 +22,7 @@ class LocationProperty extends Model
         'activity_floor',
         'property_use',
         'property_section',
+        'activity_mode',
     ];
 
     /** @var array<string, string> */

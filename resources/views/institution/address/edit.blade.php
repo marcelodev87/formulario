@@ -7,8 +7,8 @@
 @endphp
 <div class="card space-y-8">
     <div class="space-y-2">
-        <h1 class="text-2xl font-semibold text-slate-900">Editar endereco da instituicao</h1>
-        <p class="text-sm text-slate-600">Atualize as informacoes de localizacao utilizadas em documentos e formularios oficiais.</p>
+        <h1 class="text-2xl font-semibold text-slate-900">{{ __('forms.institution_address') }}</h1>
+        <p class="text-sm text-slate-600">{{ __('forms.address_info') }}</p>
     </div>
 
     <form method="POST" action="{{ route('institution.address.update') }}" class="space-y-6">

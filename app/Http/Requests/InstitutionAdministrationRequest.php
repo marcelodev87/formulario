@@ -38,6 +38,10 @@ class InstitutionAdministrationRequest extends FormRequest
                 'presbitero',
             ])],
             'stipend_policy' => ['required', Rule::in(['all_pastors', 'only_president', 'none'])],
+            'additional_info' => ['nullable', 'string', 'max:5000'],
+            'name_option_1' => ['nullable', 'string', 'max:255'],
+            'name_option_2' => ['nullable', 'string', 'max:255'],
+            'name_option_3' => ['nullable', 'string', 'max:255'],
         ];
     }
 

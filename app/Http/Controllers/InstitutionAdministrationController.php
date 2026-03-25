@@ -16,13 +16,32 @@ class InstitutionAdministrationController extends Controller
 
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
-        $administration = $institution->administration;
         $redirectParams = $this->sanitizeRedirectParams($request->query());
+        $process = null;
+        $administration = null;
+
+        // Se houver process_id, carregar dados administrativos do PROCESSO
+        if (isset($redirectParams['process_id'])) {
+            $process = Process::find($redirectParams['process_id']);
+            abort_unless($process && $process->institution_id === $institution->id, 403);
+            
+            // Extrair dados do meta
+            $adminData = $process->meta['administration'] ?? null;
+            if ($adminData) {
+                // Criar um objeto dummy com os dados do meta
+                $administration = (object) $adminData;
+            }
+        } else {
+            // Caso contrário, carregar dados administrativos da INSTITUIÇÃO
+            $administration = $institution->administration;
+        }
+
         $returnUrl = $this->resolveTargetRoute($institution, $redirectParams, 'dashboard');
 
         return view('administration.form', [
             'institution' => $institution,
             'administration' => $administration,
+            'process' => $process,
             'redirectParams' => $redirectParams,
             'returnUrl' => $returnUrl,
         ]);
@@ -35,9 +54,10 @@ class InstitutionAdministrationController extends Controller
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
         $data = $request->validated();
+        $redirectParams = $this->sanitizeRedirectParams($request->input());
         $presidentTermYears = $data['president_term_type'] === 'years' ? $data['president_term_years'] : null;
 
-        $institution->administration()->updateOrCreate([], [
+        $administrationData = [
             'dissolution_mode' => $data['dissolution_mode'],
             'governance_model' => $data['governance_model'],
             'president_term_indefinite' => $data['president_term_type'] === 'indefinite',
@@ -47,9 +67,25 @@ class InstitutionAdministrationController extends Controller
             'financial_responsible' => $data['financial_responsible'],
             'ministerial_roles' => $data['ministerial_roles'] ?? [],
             'stipend_policy' => $data['stipend_policy'],
-        ]);
+            'additional_info' => $data['additional_info'] ?? null,
+            'name_option_1' => $data['name_option_1'] ?? null,
+            'name_option_2' => $data['name_option_2'] ?? null,
+            'name_option_3' => $data['name_option_3'] ?? null,
+        ];
 
-        $redirectParams = $this->sanitizeRedirectParams($request->input());
+        // Se houver process_id, salvar dados administrativos do PROCESSO
+        if (isset($redirectParams['process_id'])) {
+            $process = Process::find($redirectParams['process_id']);
+            abort_unless($process && $process->institution_id === $institution->id, 403);
+            
+            // Armazenar no campo meta do processo
+            $process->meta = array_merge($process->meta ?? [], ['administration' => $administrationData]);
+            $process->save();
+        } else {
+            // Caso contrário, salvar dados administrativos da INSTITUIÇÃO
+            $institution->administration()->updateOrCreate([], $administrationData);
+        }
+
         $redirectUrl = $this->resolveTargetRoute($institution, $redirectParams, 'administration.edit', $redirectParams);
 
         return redirect($redirectUrl)->with('status', 'Dados administrativos atualizados com sucesso.');

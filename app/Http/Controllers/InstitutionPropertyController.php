@@ -16,8 +16,29 @@ class InstitutionPropertyController extends Controller
 
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
-        $location = $institution->ensureHeadquartersLocation()->load('property');
         $redirectParams = $this->sanitizeRedirectParams($request->query());
+        $process = null;
+        $location = null;
+
+        // Se houver process_id, carregar imóvel do PROCESSO
+        if (isset($redirectParams['process_id'])) {
+            $process = Process::find($redirectParams['process_id']);
+            abort_unless($process && $process->institution_id === $institution->id, 403);
+            $location = $process->location;
+            // Se não houver localização no processo, criar vazia
+            if (!$location) {
+                $location = new \App\Models\Location([
+                    'process_id' => $process->id,
+                    'institution_id' => $institution->id,
+                    'type' => 'headquarters',
+                ]);
+            }
+            $location->load('property');
+        } else {
+            // Caso contrário, carregar imóvel da INSTITUIÇÃO
+            $location = $institution->ensureHeadquartersLocation()->load('property');
+        }
+
         $returnUrl = $this->resolveTargetRoute($institution, $redirectParams, 'dashboard');
 
         return view('institution.property.edit', [
@@ -36,12 +57,28 @@ class InstitutionPropertyController extends Controller
         abort_unless($institution && $institution->owner_user_id === $request->user()->id, 403);
 
         $data = $request->validated();
+        $redirectParams = $this->sanitizeRedirectParams($request->input());
 
-        $location = $institution->ensureHeadquartersLocation();
+        // Se houver process_id, salvar imóvel do PROCESSO
+        if (isset($redirectParams['process_id'])) {
+            $process = Process::find($redirectParams['process_id']);
+            abort_unless($process && $process->institution_id === $institution->id, 403);
+            
+            $location = $process->location ?? new \App\Models\Location([
+                'process_id' => $process->id,
+                'institution_id' => $institution->id,
+                'type' => 'headquarters',
+            ]);
+            if (!$location->exists) {
+                $location->save();
+            }
+        } else {
+            // Caso contrário, salvar imóvel da INSTITUIÇÃO
+            $location = $institution->ensureHeadquartersLocation();
+        }
 
         $location->property()->updateOrCreate([], $data);
 
-        $redirectParams = $this->sanitizeRedirectParams($request->input());
         $redirectUrl = $this->resolveTargetRoute($institution, $redirectParams, 'institution.property.edit', $redirectParams);
 
         return redirect($redirectUrl)->with('status', 'Dados do imovel atualizados com sucesso.');

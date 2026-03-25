@@ -20,8 +20,8 @@
 @endphp
 <div class="card space-y-8">
     <div class="space-y-2">
-        <h1 class="text-2xl font-semibold text-slate-900">Dados administrativos</h1>
-        <p class="text-sm text-slate-600">Defina ou ajuste as regras de governo e responsabilidades da diretoria.</p>
+        <h1 class="text-2xl font-semibold text-slate-900">{{ __('forms.administration_title') }}</h1>
+        <p class="text-sm text-slate-600">{{ __('forms.administration_internal_description') }}</p>
     </div>
 
     <form method="POST" action="{{ route('etika.processes.administration.update', $process) }}" class="space-y-8">
@@ -32,30 +32,30 @@
             <h2 class="text-lg font-semibold">Estrutura de governo</h2>
             <div class="grid gap-4">
                 <div class="space-y-1">
-                    <span class="form-label">Extincao da organizacao</span>
+                    <span class="form-label">{{ __('forms.extincao_organizacao') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="dissolution_mode" value="president" {{ old('dissolution_mode', $administration->dissolution_mode ?? '') === 'president' ? 'checked' : '' }} required>
-                        Por decisao do Presidente
+                        {{ __('forms.por_decisao_presidente') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="dissolution_mode" value="members" {{ old('dissolution_mode', $administration->dissolution_mode ?? '') === 'members' ? 'checked' : '' }}>
-                        Por decisao dos membros
+                        {{ __('forms.por_decisao_membros') }}
                     </label>
                 </div>
 
                 <div class="space-y-1">
-                    <span class="form-label">Modelo de governo</span>
+                    <span class="form-label">{{ __('forms.regime_governo') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="governance_model" value="episcopal" {{ old('governance_model', $administration->governance_model ?? '') === 'episcopal' ? 'checked' : '' }} required>
-                        Episcopal: decisoes centralizadas no pastor
+                        {{ __('forms.episcopal') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="governance_model" value="presbiterial" {{ old('governance_model', $administration->governance_model ?? '') === 'presbiterial' ? 'checked' : '' }}>
-                        Presbiterial: decisoes tomadas por um grupo de lideres
+                        {{ __('forms.presbiterial') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="governance_model" value="congregacional" {{ old('governance_model', $administration->governance_model ?? '') === 'congregacional' ? 'checked' : '' }}>
-                        Congregacional: decisoes tomadas por todos os membros
+                        {{ __('forms.congregacional') }}
                     </label>
                 </div>
 
@@ -81,21 +81,21 @@
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-lg font-semibold">Decisoes ministeriais</h2>
+            <h2 class="text-lg font-semibold">{{ __('forms.ministerial_decisions') }}</h2>
             <div class="grid gap-4">
                 <div class="space-y-1">
-                    <span class="form-label">Ordenacoes ao ministerio</span>
+                    <span class="form-label">{{ __('forms.ordination_decision') }}</span>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="ordination_decision" value="president" {{ old('ordination_decision', $administration->ordination_decision ?? '') === 'president' ? 'checked' : '' }} required>
-                        Por decisao do presidente
+                        {{ __('forms.por_decisao_presidente') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="ordination_decision" value="leadership" {{ old('ordination_decision', $administration->ordination_decision ?? '') === 'leadership' ? 'checked' : '' }}>
-                        Por decisao da lideranca
+                        {{ __('forms.por_decisao_lideranca') }}
                     </label>
                     <label class="flex items-center gap-2 text-sm">
                         <input type="radio" name="ordination_decision" value="members" {{ old('ordination_decision', $administration->ordination_decision ?? '') === 'members' ? 'checked' : '' }}>
-                        Por decisao dos membros
+                        {{ __('forms.por_decisao_membros') }}
                     </label>
                 </div>
 

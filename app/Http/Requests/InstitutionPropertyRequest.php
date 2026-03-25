@@ -26,6 +26,7 @@ class InstitutionPropertyRequest extends FormRequest
             'activity_floor' => ['nullable', 'string', 'max:120'],
             'property_use' => ['nullable', 'string', 'max:120'],
             'property_section' => ['nullable', 'string', 'max:120'],
+            'activity_mode' => ['required', 'string', 'in:address,online'],
         ];
     }
 
