@@ -29,9 +29,8 @@
         'process_id' => $process->id,
     ] : [];
     $internalMemberUrl = $internalMemberUrl ?? route('invite.members.internal', $processRedirectParams);
-    $memberActionUrl = $isOwner
-        ? ($internalMemberUrl ?? '#members-section')
-        : null;
+    $memberActionUrl = $isOwner ? $internalMemberUrl : null;
+    $memberViewUrl = '#members-section';
     $statusItems = [
         [
             'key' => 'members',
@@ -43,8 +42,11 @@
                 : 'Cadastre pelo menos um membro alem do presidente.',
             'complete' => $hasMinimumMembers,
             'action' => $memberActionUrl,
-            'action_label' => $hasMinimumMembers ? 'Ver membros' : 'Cadastrar membros',
-            'action_class' => $hasMinimumMembers ? 'btn-secondary px-4 py-2 text-sm' : 'btn px-4 py-2 text-sm',
+            'action_label' => 'Incluir membro',
+            'action_class' => 'btn-secondary px-4 py-2 text-sm',
+            'secondary_action' => $memberViewUrl,
+            'secondary_action_label' => 'Ver membros',
+            'secondary_action_class' => 'btn-secondary px-4 py-2 text-sm',
         ],
         [
             'key' => 'address',
@@ -155,9 +157,17 @@
                                 @endif
                             </span>
                             @if($isOwner && $item['action'])
-                                <a href="{{ $item['action'] }}" class="{{ $item['action_class'] }}">
-                                    {{ $item['action_label'] }}
-                                </a>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <a href="{{ $item['action'] }}" class="{{ $item['action_class'] }}">
+                                        {{ $item['action_label'] }}
+                                    </a>
+
+                                    @if(!empty($item['secondary_action']))
+                                        <a href="{{ $item['secondary_action'] }}" class="{{ $item['secondary_action_class'] }}">
+                                            {{ $item['secondary_action_label'] }}
+                                        </a>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>
