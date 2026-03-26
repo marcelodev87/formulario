@@ -24,7 +24,7 @@ class InstitutionOwnerRequest extends FormRequest
             'institution_document' => [
                 'required',
                 'string',
-                'regex:/^(\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}|\d{3}\.\d{3}\.\d{3}\-\d{2})$/',
+                'cpf',
                 Rule::unique('institutions', 'document')->ignore($institutionId),
             ],
             'institution_email' => [
@@ -42,7 +42,7 @@ class InstitutionOwnerRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'institution_document.regex' => 'Informe o CNPJ ou CPF da instituicao no formato valido.',
+            'institution_document.cpf' => 'Informe o CPF da instituicao no formato valido.',
         ];
     }
 

@@ -29,6 +29,12 @@ class InitialSetupController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($user, $validated) {
+            $user->name = $validated['institution_name'];
+            $user->cpf = $validated['institution_document'];
+            $user->email = $validated['institution_email'];
+            $user->phone = $validated['institution_phone'];
+            $user->save();
+
             $institution = $user->institution()->create([
                 'name' => $validated['institution_name'],
                 'document' => $validated['institution_document'],

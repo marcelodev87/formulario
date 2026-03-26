@@ -4,18 +4,18 @@
 <div class="w-full max-w-3xl mx-auto space-y-6">
     <div class="card space-y-4">
         <div class="space-y-2">
-            <h1 class="text-2xl font-semibold text-slate-900">Cadastre sua instituicao</h1>
+            <h1 class="text-2xl font-semibold text-slate-900">Cadastre-se</h1>
             <p class="text-sm text-slate-600">Preencha os dados abaixo para iniciar o acompanhamento dos processos no painel.</p>
         </div>
         <form method="POST" action="{{ route('setup.store') }}" class="space-y-4">
             @csrf
             <div class="space-y-1">
-                <label class="form-label" for="institution_name">Nome da instituicao</label>
+                <label class="form-label" for="institution_name">Seu nome</label>
                 <input id="institution_name" name="institution_name" type="text" class="form-control" value="{{ old('institution_name') }}" required>
             </div>
             <div class="space-y-1">
-                <label class="form-label" for="institution_document">Documento (CNPJ ou CPF do Presidente, caso a Igreja ainda não tenha um CNPJ)</label>
-                <input id="institution_document" name="institution_document" type="text" class="form-control" value="{{ old('institution_document') }}" data-mask="document" placeholder="00.000.000/0000-00" required>
+                <label class="form-label" for="institution_document">CPF</label>
+                <input id="institution_document" name="institution_document" type="text" class="form-control" value="{{ old('institution_document') }}" data-mask="cpf" placeholder="000.000.000-00" required>
             </div>
             <div class="space-y-1">
                 <label class="form-label" for="institution_email">E-mail</label>
@@ -26,8 +26,8 @@
                 <input id="institution_phone" name="institution_phone" type="text" class="form-control" value="{{ old('institution_phone') }}" data-mask="phone" placeholder="(00) 00000-0000" required>
             </div>
             <input type="hidden" name="owner_user_id" value="{{ auth()->id() }}">
-            <p class="text-xs text-slate-500">Responsavel vinculado: {{ auth()->user()->email }} (ID {{ auth()->id() }})</p>
-            <button type="submit" class="btn w-full">Salvar instituicao</button>
+
+            <button type="submit" class="btn w-full">Salvar cadastro</button>
         </form>
     </div>
 </div>
@@ -40,15 +40,6 @@
             return value.replace(/\D/g, '').slice(0, max);
         };
 
-        var formatCnpj = function (value) {
-            var digits = digitsOnly(value, 14);
-            if (digits.length <= 2) return digits;
-            if (digits.length <= 5) return digits.slice(0, 2) + '.' + digits.slice(2);
-            if (digits.length <= 8) return digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5);
-            if (digits.length <= 12) return digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8);
-            return digits.slice(0, 2) + '.' + digits.slice(2, 5) + '.' + digits.slice(5, 8) + '/' + digits.slice(8, 12) + '-' + digits.slice(12);
-        };
-
         var formatCpf = function (value) {
             var digits = digitsOnly(value, 11);
             if (digits.length <= 3) return digits;
@@ -58,8 +49,7 @@
         };
 
         var formatDocument = function (value) {
-            var digits = value.replace(/\D/g, '');
-            return digits.length > 11 ? formatCnpj(value) : formatCpf(value);
+            return formatCpf(value);
         };
 
         var formatPhone = function (value) {
@@ -72,7 +62,7 @@
         };
 
         var formatters = {
-            document: formatDocument,
+            cpf: formatDocument,
             phone: formatPhone
         };
 
