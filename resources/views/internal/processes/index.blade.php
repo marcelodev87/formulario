@@ -12,6 +12,13 @@
             <h1 class="text-3xl font-semibold text-slate-900">Processos</h1>
             <p class="text-sm text-slate-600">Painel da equipe para acompanhar e revisar todos os processos.</p>
         </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('etika.users.index') }}" class="btn-secondary">Gestão de usuários</a>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div></div>
         <div class="flex flex-wrap items-stretch gap-3">
             <div class="rounded-2xl border border-slate-200 bg-white p-4 text-sm flex-1 min-w-[180px]">
                 <p class="text-xs uppercase tracking-wide text-slate-500">Total no mes</p>

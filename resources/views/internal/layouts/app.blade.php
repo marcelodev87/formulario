@@ -13,6 +13,10 @@
                 <div class="text-lg font-semibold">Painel Etika</div>
                 @auth('internal')
                     <div class="flex items-center gap-4 text-sm">
+                        <a href="{{ route('etika.users.profile.edit') }}" class="text-sm underline">Meu perfil</a>
+                        @if(auth('internal')->user()->isAdmin())
+                            <a href="{{ route('etika.users.index') }}" class="text-sm underline">Usuários</a>
+                        @endif
                         <span>{{ auth('internal')->user()->name }}</span>
                         <form method="POST" action="{{ route('etika.logout') }}">
                             @csrf

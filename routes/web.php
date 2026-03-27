@@ -18,6 +18,7 @@ use App\Http\Controllers\Internal\ProcessController as InternalProcessController
 use App\Http\Controllers\Internal\BranchLocationController as InternalBranchLocationController;
 use App\Http\Controllers\Internal\BranchLeaderController as InternalBranchLeaderController;
 use App\Http\Controllers\Internal\InstitutionAddressController as InternalInstitutionAddressController;
+use App\Http\Controllers\Internal\InternalUserController;
 use App\Http\Controllers\Internal\InstitutionPropertyController as InternalInstitutionPropertyController;
 use App\Http\Controllers\Internal\InstitutionAdministrationController as InternalInstitutionAdministrationController;
 use App\Http\Controllers\Internal\MemberController as InternalMemberController;
@@ -103,6 +104,16 @@ Route::prefix('etika')->name('etika.')->group(function () {
         Route::put('/processos/{process}/filial', [InternalBranchLocationController::class, 'update'])->name('processes.branch.location.update');
         Route::get('/processos/{process}/filial/dirigente', [InternalBranchLeaderController::class, 'edit'])->name('processes.branch.leader.edit');
         Route::put('/processos/{process}/filial/dirigente', [InternalBranchLeaderController::class, 'update'])->name('processes.branch.leader.update');
+
+        Route::get('/usuarios', [InternalUserController::class, 'index'])->name('users.index');
+        Route::get('/usuarios/novo', [InternalUserController::class, 'create'])->name('users.create');
+        Route::post('/usuarios', [InternalUserController::class, 'store'])->name('users.store');
+        Route::get('/usuarios/{user}/editar', [InternalUserController::class, 'edit'])->name('users.edit');
+        Route::put('/usuarios/{user}', [InternalUserController::class, 'update'])->name('users.update');
+        Route::delete('/usuarios/{user}', [InternalUserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/perfil', [InternalUserController::class, 'profileEdit'])->name('users.profile.edit');
+        Route::put('/perfil', [InternalUserController::class, 'profileUpdate'])->name('users.profile.update');
     });
 });
 
